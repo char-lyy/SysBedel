@@ -11,4 +11,5 @@ package unse.sysbedel;
 public class ClasePruebaBruno {
     private String miNombre;
     private String miApellido;
+    private int miEdad;
 }
