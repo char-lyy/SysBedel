@@ -17,6 +17,7 @@ public class Main {
         
         while (true) {
             System.out.println("monki");
+            System.out.println("CHI");
         }
     }
 }
