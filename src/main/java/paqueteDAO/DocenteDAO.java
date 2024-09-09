@@ -1,8 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package paqueteDAO;
+
 import paqueteDTO.DocenteDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -88,6 +85,32 @@ public class DocenteDAO {
 
     // Método para actualizar un docente
     public boolean actualizarDocente(DocenteDTO docente) {
-        String sql = "UPDATE docente"; 
+        String sql = "UPDATE docente SET nombreDocente = ?, apellidoDocente = ?, mailDocente = ?, estadoDocente = ?, tituloDocente = ?, telefonoDocente = ? WHERE legajoDocente = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, docente.getNombreDocente());
+            ps.setString(2, docente.getApellidoDocente());
+            ps.setString(3, docente.getMailDocente());
+            ps.setBoolean(4, docente.getEstadoDocente());
+            ps.setString(5, docente.getTituloDocente());
+            ps.setInt(6, docente.getTelefonoDocente());
+            ps.setInt(7, docente.getLegajoDocente());
 
- 
+            return ps.executeUpdate() > 0; // Devuelve true si se actualizó correctamente
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Método para eliminar un docente por su legajo
+    public boolean eliminarDocente(int legajoDocente) {
+        String sql = "DELETE FROM docente WHERE legajoDocente = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, legajoDocente);
+            return ps.executeUpdate() > 0; // Devuelve true si se eliminó correctamente
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
