@@ -6,6 +6,16 @@ package paqueteDTO;
 
 public class DocenteDTO {
 
+    public DocenteDTO(int legajoDocente, String nombreDocente, String apellidoDocente, String mailDocente, Boolean estadoDocente, String tituloDocente, int telefonoDocente) {
+        this.legajoDocente = legajoDocente;
+        this.nombreDocente = nombreDocente;
+        this.apellidoDocente = apellidoDocente;
+        this.mailDocente = mailDocente;
+        this.estadoDocente = estadoDocente;
+        this.tituloDocente = tituloDocente;
+        this.telefonoDocente = telefonoDocente;
+    }
+
     public int getLegajoDocente() {
         return legajoDocente;
     }
@@ -61,6 +71,7 @@ public class DocenteDTO {
     public void setTelefonoDocente(int telefonoDocente) {
         this.telefonoDocente = telefonoDocente;
     }
+
     private int legajoDocente; 
     private String nombreDocente;
     private String apellidoDocente;
