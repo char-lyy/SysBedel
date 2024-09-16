@@ -10,6 +10,9 @@ public class ActividadDAO {
 
     private Connection connection;
 
+    public ActividadDAO() {
+    }
+
     // Constructor que recibe una conexión a la base de datos
     public ActividadDAO(Connection connection) {
         this.connection = connection;
@@ -85,8 +88,7 @@ public class ActividadDAO {
     public List<ActividadDTO> obtenerTodasLasActividades() throws SQLException {
         List<ActividadDTO> actividades = new ArrayList<>();
         String query = "SELECT * FROM Actividad";
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 String codigoActividad = resultSet.getString("codigoActividad");

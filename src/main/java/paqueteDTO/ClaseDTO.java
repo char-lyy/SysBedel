@@ -1,21 +1,33 @@
 package paqueteDTO;
 
-public class ClaseDTO {
+import java.util.Date;
 
-    public ClaseDTO(int codigoActividad, int legajoDocente, String asignatura) {
-        this.codigoActividad = codigoActividad;
+public class ClaseDTO extends ActividadDTO {
+
+    private int legajoDocente;
+    private String asignatura;
+
+    public ClaseDTO() {
+//        super();
+    }
+
+    public ClaseDTO(int legajoDocente, String asignatura, String codigoActividad, int numeroAula, String codigoHorario, Date fechaInicioActividad, Date fechaFinActividad, String periodoActividad, String tipoActividad) {
+        super(codigoActividad, numeroAula, codigoHorario, fechaInicioActividad, fechaFinActividad, periodoActividad, tipoActividad);
         this.legajoDocente = legajoDocente;
         this.asignatura = asignatura;
     }
 
-    public int getCodigoActividad() {
-        return codigoActividad;
+    public ClaseDTO(String codigoActividad, int legajoDocente, String asignatura) {
+        super(codigoActividad);
+        this.legajoDocente = legajoDocente;
+        this.asignatura = asignatura;
     }
-
-    public void setCodigoActividad(int codigoActividad) {
-        this.codigoActividad = codigoActividad;
+    
+    public ClaseDTO cargarDatos(){
+        
+        
+        return this;
     }
-
     public int getLegajoDocente() {
         return legajoDocente;
     }
@@ -31,9 +43,5 @@ public class ClaseDTO {
     public void setAsignatura(String asignatura) {
         this.asignatura = asignatura;
     }
-
-    private int codigoActividad;
-    private int legajoDocente;
-    private String asignatura;
 
 }

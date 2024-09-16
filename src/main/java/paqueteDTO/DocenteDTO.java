@@ -79,5 +79,11 @@ public class DocenteDTO {
     private Boolean estadoDocente;
     private String tituloDocente;
     private int telefonoDocente;
+
+    @Override
+    public String toString() {
+        return "DocenteDTO{" + "legajoDocente=" + legajoDocente + ", nombreDocente=" + nombreDocente + ", apellidoDocente=" + apellidoDocente + ", mailDocente=" + mailDocente + ", estadoDocente=" + estadoDocente + ", tituloDocente=" + tituloDocente + ", telefonoDocente=" + telefonoDocente + '}';
+    }
+    
     
 }

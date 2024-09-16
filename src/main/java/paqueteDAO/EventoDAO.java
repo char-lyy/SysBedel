@@ -18,7 +18,7 @@ public class EventoDAO {
     public boolean agregarEvento(EventoDTO evento) throws SQLException {
         String query = "INSERT INTO Evento (codigoActividad, ResponsableDelEvento, DescripcionDelEvento, nroNotaEvento) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, evento.getCodigoActividad());
+            statement.setString(1, evento.getCodigoActividad());
             statement.setString(2, evento.getResponsableEvento());
             statement.setString(3, evento.getDescripcionEvento());
             statement.setInt(4, evento.getNroNotaEvento());
@@ -29,10 +29,10 @@ public class EventoDAO {
     }
 
     // Método para obtener un evento por su código de actividad
-    public EventoDTO obtenerEventoPorCodigo(int codigoActividad) throws SQLException {
+    public EventoDTO obtenerEventoPorCodigo(String codigoActividad) throws SQLException {
         String query = "SELECT * FROM Evento WHERE codigoActividad = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, codigoActividad);
+            statement.setString(1, codigoActividad);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
@@ -52,7 +52,7 @@ public class EventoDAO {
             statement.setString(1, evento.getResponsableEvento());
             statement.setString(2, evento.getDescripcionEvento());
             statement.setInt(3, evento.getNroNotaEvento());
-            statement.setInt(4, evento.getCodigoActividad());
+            statement.setString(4, evento.getCodigoActividad());
 
             int filasActualizadas = statement.executeUpdate();
             return filasActualizadas > 0;
@@ -78,7 +78,7 @@ public class EventoDAO {
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                int codigoActividad = resultSet.getInt("codigoActividad");
+                String codigoActividad = resultSet.getString("codigoActividad");
                 String responsableEvento = resultSet.getString("ResponsableDelEvento");
                 String descripcionEvento = resultSet.getString("DescripcionDelEvento");
                 int nroNotaEvento = resultSet.getInt("nroNotaEvento");

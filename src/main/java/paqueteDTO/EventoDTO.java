@@ -1,27 +1,25 @@
 package paqueteDTO;
 
-public class EventoDTO {
+import java.util.Date;
 
-    private int codigoActividad;
+public class EventoDTO extends ActividadDTO {
+
     private String responsableEvento;
     private String descripcionEvento;
     private int nroNotaEvento;
 
-    // Constructor
-    public EventoDTO(int codigoActividad, String responsableEvento, String descripcionEvento, int nroNotaEvento) {
-        this.codigoActividad = codigoActividad;
+    public EventoDTO(String responsableEvento, String descripcionEvento, int nroNotaEvento, String codigoActividad, int numeroAula, String codigoHorario, Date fechaInicioActividad, Date fechaFinActividad, String periodoActividad, String tipoActividad) {
+        super(codigoActividad, numeroAula, codigoHorario, fechaInicioActividad, fechaFinActividad, periodoActividad, tipoActividad);
         this.responsableEvento = responsableEvento;
         this.descripcionEvento = descripcionEvento;
         this.nroNotaEvento = nroNotaEvento;
     }
 
-    // Getters y Setters
-    public int getCodigoActividad() {
-        return codigoActividad;
-    }
+    public EventoDTO(String codigoActividad, String responsableEvento, String descripcionEvento, int nroNotaEvento) {
+        super(codigoActividad);
+        this.responsableEvento = responsableEvento;
+        this.nroNotaEvento = nroNotaEvento;
 
-    public void setCodigoActividad(int codigoActividad) {
-        this.codigoActividad = codigoActividad;
     }
 
     public String getResponsableEvento() {
@@ -47,4 +45,5 @@ public class EventoDTO {
     public void setNroNotaEvento(int nroNotaEvento) {
         this.nroNotaEvento = nroNotaEvento;
     }
+
 }

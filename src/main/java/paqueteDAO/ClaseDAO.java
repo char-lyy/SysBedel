@@ -14,24 +14,26 @@ public class ClaseDAO {
         this.connection = connection;
     }
 
+
     // Método para agregar una nueva clase
     public boolean agregarClase(ClaseDTO clase) throws SQLException {
+        ActividadDAO actividadDAO = new ActividadDAO();
+        actividadDAO.agregarActividad(clase);
         String query = "INSERT INTO Clase (codigoActividad, legajoDocente, asignatura) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, clase.getCodigoActividad());
+            statement.setString(1, clase.getCodigoActividad());
             statement.setInt(2, clase.getLegajoDocente());
             statement.setString(3, clase.getAsignatura());
-
             int filasInsertadas = statement.executeUpdate();
             return filasInsertadas > 0;
         }
     }
 
     // Método para obtener una clase por su código de actividad y legajo de docente
-    public ClaseDTO obtenerClasePorCodigoYDocente(int codigoActividad, int legajoDocente) throws SQLException {
+    public ClaseDTO obtenerClasePorCodigoYDocente(String codigoActividad, int legajoDocente) throws SQLException {
         String query = "SELECT * FROM Clase WHERE codigoActividad = ? AND legajoDocente = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, codigoActividad);
+            statement.setString(1, codigoActividad);
             statement.setInt(2, legajoDocente);
             ResultSet resultSet = statement.executeQuery();
 
@@ -48,7 +50,7 @@ public class ClaseDAO {
         String query = "UPDATE Clase SET asignatura = ? WHERE codigoActividad = ? AND legajoDocente = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, clase.getAsignatura());
-            statement.setInt(2, clase.getCodigoActividad());
+            statement.setString(2, clase.getCodigoActividad());
             statement.setInt(3, clase.getLegajoDocente());
 
             int filasActualizadas = statement.executeUpdate();
@@ -72,11 +74,10 @@ public class ClaseDAO {
     public List<ClaseDTO> obtenerTodasLasClases() throws SQLException {
         List<ClaseDTO> clases = new ArrayList<>();
         String query = "SELECT * FROM Clase";
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                int codigoActividad = resultSet.getInt("codigoActividad");
+                String codigoActividad = resultSet.getString("codigoActividad");
                 int legajoDocente = resultSet.getInt("legajoDocente");
                 String asignatura = resultSet.getString("asignatura");
 
