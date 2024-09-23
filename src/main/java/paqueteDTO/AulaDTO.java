@@ -1,50 +1,45 @@
 package paqueteDTO;
 
 public class AulaDTO {
-    private int numeroAulaDTO;
-    private int capacidadAulaDTO;
-    private String llaveAsignada;
-    private boolean booleanAulaDTO;
 
-    public AulaDTO(int numeroAulaDTO, int capacidadAulaDTO, String llaveAsignada, boolean booleanAulaDTO) {
-        this.numeroAulaDTO = numeroAulaDTO;
-        this.capacidadAulaDTO = capacidadAulaDTO;
-        this.llaveAsignada = llaveAsignada;
-        this.booleanAulaDTO = booleanAulaDTO;
+    private int nroAula;
+    private int capacidad;
+    private boolean ocupada;
+
+    public AulaDTO(int nroAula, int capacidad) {
+        this.nroAula = nroAula;
+        this.capacidad = capacidad;
+        ocupada = false;
     }
 
-    
-    public int getNumeroAulaDTO() {
-        return numeroAulaDTO;
+    public AulaDTO(int nroAula, int capacidad, boolean ocupada) {
+        this.nroAula = nroAula;
+        this.capacidad = capacidad;
+        this.ocupada = ocupada;
     }
 
-    
-    public void setNumeroAulaDTO(int numeroAulaDTO) {
-        this.numeroAulaDTO = numeroAulaDTO;
+    public int getNroAula() {
+        return nroAula;
     }
 
-    public int getCapacidadAulaDTO() {
-        return capacidadAulaDTO;
+    public void setNroAula(int nroAula) {
+        this.nroAula = nroAula;
     }
 
-    public void setCapacidadAulaDTO(int capacidadAulaDTO) {
-        this.capacidadAulaDTO = capacidadAulaDTO;
+    public int getCapacidad() {
+        return capacidad;
     }
 
-    public String getLlaveAsignada() {
-        return llaveAsignada;
+    public void setCapacidad(int capacidad) {
+        this.capacidad = capacidad;
     }
 
-    public void setLlaveAsignada(String llaveAsignada) {
-        this.llaveAsignada = llaveAsignada;
+    public boolean isOcupada() {
+        return ocupada;
     }
 
-    public boolean isBooleanAulaDTO() {
-        return booleanAulaDTO;
+    public void setOcupada(boolean ocupada) {
+        this.ocupada = ocupada;
     }
 
-    public void setBooleanAulaDTO(boolean booleanAulaDTO) {
-        this.booleanAulaDTO = booleanAulaDTO;
-    }
-    
 }

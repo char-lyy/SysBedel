@@ -1,89 +1,79 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package paqueteDTO;
 
 public class DocenteDTO {
 
-    public DocenteDTO(int legajoDocente, String nombreDocente, String apellidoDocente, String mailDocente, Boolean estadoDocente, String tituloDocente, int telefonoDocente) {
-        this.legajoDocente = legajoDocente;
-        this.nombreDocente = nombreDocente;
-        this.apellidoDocente = apellidoDocente;
-        this.mailDocente = mailDocente;
-        this.estadoDocente = estadoDocente;
-        this.tituloDocente = tituloDocente;
-        this.telefonoDocente = telefonoDocente;
+    private String legajo;
+    private String nombre;
+    private String apellido;
+    private String mail;
+    private boolean activo;
+    private String titulo;
+    private String telefono;
+
+    public DocenteDTO(String legajo, String nombre, String apellido, String mail, boolean activo, String titulo, String telefono) {
+        this.legajo = legajo;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.mail = mail;
+        this.activo = activo;
+        this.titulo = titulo;
+        this.telefono = telefono;
     }
 
-    public int getLegajoDocente() {
-        return legajoDocente;
+    public String getLegajo() {
+        return legajo;
     }
 
-    public void setLegajoDocente(int legajoDocente) {
-        this.legajoDocente = legajoDocente;
+    public void setLegajo(String legajo) {
+        this.legajo = legajo;
     }
 
-    public String getNombreDocente() {
-        return nombreDocente;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNombreDocente(String nombreDocente) {
-        this.nombreDocente = nombreDocente;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String getApellidoDocente() {
-        return apellidoDocente;
+    public String getApellido() {
+        return apellido;
     }
 
-    public void setApellidoDocente(String apellidoDocente) {
-        this.apellidoDocente = apellidoDocente;
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
-    public String getMailDocente() {
-        return mailDocente;
+    public String getMail() {
+        return mail;
     }
 
-    public void setMailDocente(String mailDocente) {
-        this.mailDocente = mailDocente;
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
-    public Boolean getEstadoDocente() {
-        return estadoDocente;
+    public boolean isActivo() {
+        return activo;
     }
 
-    public void setEstadoDocente(Boolean estadoDocente) {
-        this.estadoDocente = estadoDocente;
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
-    public String getTituloDocente() {
-        return tituloDocente;
+    public String getTitulo() {
+        return titulo;
     }
 
-    public void setTituloDocente(String tituloDocente) {
-        this.tituloDocente = tituloDocente;
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
-    public int getTelefonoDocente() {
-        return telefonoDocente;
+    public String getTelefono() {
+        return telefono;
     }
 
-    public void setTelefonoDocente(int telefonoDocente) {
-        this.telefonoDocente = telefonoDocente;
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 
-    private int legajoDocente; 
-    private String nombreDocente;
-    private String apellidoDocente;
-    private String mailDocente;
-    private Boolean estadoDocente;
-    private String tituloDocente;
-    private int telefonoDocente;
-
-    @Override
-    public String toString() {
-        return "DocenteDTO{" + "legajoDocente=" + legajoDocente + ", nombreDocente=" + nombreDocente + ", apellidoDocente=" + apellidoDocente + ", mailDocente=" + mailDocente + ", estadoDocente=" + estadoDocente + ", tituloDocente=" + tituloDocente + ", telefonoDocente=" + telefonoDocente + '}';
-    }
-    
-    
 }

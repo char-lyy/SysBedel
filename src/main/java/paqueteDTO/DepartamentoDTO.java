@@ -2,6 +2,9 @@ package paqueteDTO;
 
 public class DepartamentoDTO {
 
+    private int codigoDepartamento;
+    private String nombreDepartamento;
+
     public DepartamentoDTO(int codigoDepartamento, String nombreDepartamento) {
         this.codigoDepartamento = codigoDepartamento;
         this.nombreDepartamento = nombreDepartamento;
@@ -22,7 +25,5 @@ public class DepartamentoDTO {
     public void setNombreDepartamento(String nombreDepartamento) {
         this.nombreDepartamento = nombreDepartamento;
     }
-    private int codigoDepartamento;
-    private String nombreDepartamento;
-    
+
 }

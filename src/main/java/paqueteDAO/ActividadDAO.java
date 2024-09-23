@@ -1,108 +1,85 @@
 package paqueteDAO;
 
 import paqueteDTO.ActividadDTO;
-import java.util.Date;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import paqueteDTO.FechaDTO;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ActividadDAO {
 
     private Connection connection;
 
-    public ActividadDAO() {
-    }
-
-    // Constructor que recibe una conexión a la base de datos
     public ActividadDAO(Connection connection) {
         this.connection = connection;
     }
 
-    // Método para agregar una nueva actividad
-    public boolean agregarActividad(ActividadDTO actividad) throws SQLException {
-        String query = "INSERT INTO Actividad (codigoActividad, numeroAula, codigoHorario, fechaInicioActividad, fechaFinActividad, periodoActividad, tipoActividad) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, actividad.getCodigoActividad());
-            statement.setInt(2, actividad.getNumeroAula());
-            statement.setString(3, actividad.getCodigoHorario());
-            statement.setTimestamp(4, new Timestamp(actividad.getFechaInicioActividad().getTime()));
-            statement.setTimestamp(5, new Timestamp(actividad.getFechaFinActividad().getTime()));
-            statement.setString(6, actividad.getPeriodoActividad());
-            statement.setString(7, actividad.getTipoActividad());
+    // Método para insertar una actividad en la base de datos
+    public boolean insertarActividad(ActividadDTO actividad) throws SQLException {
+        String query = "INSERT INTO actividad (idActividad, fechaInicio, fechaFin, periodoActividad, tipoActividad) "
+                     + "VALUES (?, ?, ?, ?, ?)";
 
-            int filasInsertadas = statement.executeUpdate();
-            return filasInsertadas > 0;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, actividad.getIdActividad());
+            ps.setDate(2, actividad.getFechaInicioActividad().toSqlDate());
+            ps.setDate(3, actividad.getFechaFinActividad().toSqlDate());
+            ps.setString(4, actividad.getPeriodoActividad().name()); // Almacenamos el nombre del enum
+            ps.setString(5, actividad.getTipoActividad().name()); // Almacenamos el nombre del enum
+
+            int rowsInserted = ps.executeUpdate();
+            return rowsInserted > 0;
         }
     }
 
-    // Método para obtener una actividad por su código
-    public ActividadDTO obtenerActividadPorCodigo(String codigoActividad) throws SQLException {
-        String query = "SELECT * FROM Actividad WHERE codigoActividad = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, codigoActividad);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                int numeroAula = resultSet.getInt("numeroAula");
-                String codigoHorario = resultSet.getString("codigoHorario");
-                Date fechaInicioActividad = resultSet.getTimestamp("fechaInicioActividad");
-                Date fechaFinActividad = resultSet.getTimestamp("fechaFinActividad");
-                String periodoActividad = resultSet.getString("periodoActividad");
-                String tipoActividad = resultSet.getString("tipoActividad");
-
-                return new ActividadDTO(codigoActividad, numeroAula, codigoHorario, fechaInicioActividad, fechaFinActividad, periodoActividad, tipoActividad);
-            }
-        }
-        return null;
-    }
-
-    // Método para actualizar una actividad
+    // Método para actualizar una actividad existente en la base de datos
     public boolean actualizarActividad(ActividadDTO actividad) throws SQLException {
-        String query = "UPDATE Actividad SET numeroAula = ?, codigoHorario = ?, fechaInicioActividad = ?, fechaFinActividad = ?, periodoActividad = ?, tipoActividad = ? WHERE codigoActividad = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, actividad.getNumeroAula());
-            statement.setString(2, actividad.getCodigoHorario());
-            statement.setTimestamp(3, new Timestamp(actividad.getFechaInicioActividad().getTime()));
-            statement.setTimestamp(4, new Timestamp(actividad.getFechaFinActividad().getTime()));
-            statement.setString(5, actividad.getPeriodoActividad());
-            statement.setString(6, actividad.getTipoActividad());
-            statement.setString(7, actividad.getCodigoActividad());
+        String query = "UPDATE actividad SET fechaInicio = ?, fechaFin = ?, periodoActividad = ?, tipoActividad = ? "
+                     + "WHERE idActividad = ?";
 
-            int filasActualizadas = statement.executeUpdate();
-            return filasActualizadas > 0;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setDate(1, actividad.getFechaInicioActividad().toSqlDate());
+            ps.setDate(2, actividad.getFechaFinActividad().toSqlDate());
+            ps.setString(3, actividad.getPeriodoActividad().name()); // Actualizamos el nombre del enum
+            ps.setString(4, actividad.getTipoActividad().name()); // Actualizamos el nombre del enum
+            ps.setInt(5, actividad.getIdActividad());
+
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
         }
     }
 
-    // Método para eliminar una actividad por su código
-    public boolean eliminarActividad(String codigoActividad) throws SQLException {
-        String query = "DELETE FROM Actividad WHERE codigoActividad = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, codigoActividad);
+    // Método para eliminar una actividad de la base de datos
+    public boolean eliminarActividad(int idActividad) throws SQLException {
+        String query = "DELETE FROM actividad WHERE idActividad = ?";
 
-            int filasEliminadas = statement.executeUpdate();
-            return filasEliminadas > 0;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, idActividad);
+
+            int rowsDeleted = ps.executeUpdate();
+            return rowsDeleted > 0;
         }
     }
-
-    // Método para obtener todas las actividades
-    public List<ActividadDTO> obtenerTodasLasActividades() throws SQLException {
-        List<ActividadDTO> actividades = new ArrayList<>();
-        String query = "SELECT * FROM Actividad";
-        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
-
-            while (resultSet.next()) {
-                String codigoActividad = resultSet.getString("codigoActividad");
-                int numeroAula = resultSet.getInt("numeroAula");
-                String codigoHorario = resultSet.getString("codigoHorario");
-                Date fechaInicioActividad = resultSet.getTimestamp("fechaInicioActividad");
-                Date fechaFinActividad = resultSet.getTimestamp("fechaFinActividad");
-                String periodoActividad = resultSet.getString("periodoActividad");
-                String tipoActividad = resultSet.getString("tipoActividad");
-
-                ActividadDTO actividad = new ActividadDTO(codigoActividad, numeroAula, codigoHorario, fechaInicioActividad, fechaFinActividad, periodoActividad, tipoActividad);
-                actividades.add(actividad);
-            }
-        }
-        return actividades;
-    }
+//
+//    // Método para obtener una actividad por su ID
+//    public ActividadDTO obtenerActividadPorId(int idActividad) throws SQLException {
+//        String query = "SELECT * FROM actividad WHERE idActividad = ?";
+//
+//        try (PreparedStatement ps = connection.prepareStatement(query)) {
+//            ps.setInt(1, idActividad);
+//
+//            try (ResultSet rs = ps.executeQuery()) {
+//                if (rs.next()) {
+//                    FechaDTO fechaInicio = new FechaDTO(rs.getDate("fechaInicio"));
+//                    FechaDTO fechaFin = new FechaDTO(rs.getDate("fechaFin"));
+//                    ActividadDTO.PeriodoActividad periodo = ActividadDTO.PeriodoActividad.valueOf(rs.getString("periodoActividad"));
+//                    ActividadDTO.TipoActividad tipo = ActividadDTO.TipoActividad.valueOf(rs.getString("tipoActividad"));
+//
+//                    return new ActividadDTO(idActividad, fechaInicio, fechaFin, periodo, tipo);
+//                }
+//            }
+//        }
+//
+//        return null; // Si no se encontró la actividad con ese ID
+//    }
 }

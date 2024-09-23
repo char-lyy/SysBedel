@@ -1,96 +1,88 @@
-package paqueteDAO;
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import paqueteDTO.Fecha;
-import paqueteDTO.ObservacionDTO;
-
-public class ObservacionDAO {
-
-    // Método para obtener la conexión (cambia según tu configuración)
-    private Connection getConnection() throws SQLException {
-        String url = "jdbc:mysql://localhost:3306/tu_basedatos";
-        String username = "tu_usuario";
-        String password = "tu_contraseña";
-        return DriverManager.getConnection(url, username, password);
-    }
-
-    // Método para insertar una nueva observación
-    public void insertarObservacion(ObservacionDTO observacion) throws SQLException {
-        String sql = "INSERT INTO Observacion (codigoObservacion, numeroAula, descripcion, fechaObservacion) " +
-                     "VALUES (?, ?, ?, ?)";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, observacion.getCodigoObservacion());
-            ps.setInt(2, observacion.getNumeroAula());
-            ps.setString(3, observacion.getDescripcion());
-            ps.setObject(4, observacion.getFechaObservacion());
-            ps.executeUpdate();
-        }
-    }
-
-    // Método para obtener una observación por su código
-    public ObservacionDTO obtenerObservacion(int codigoObservacion) throws SQLException {
-        String sql = "SELECT * FROM Observacion WHERE codigoObservacion = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, codigoObservacion);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    ObservacionDTO observacion = new ObservacionDTO();
-                    observacion.setCodigoObservacion(rs.getInt("codigoObservacion"));
-                    observacion.setNumeroAula(rs.getInt("numeroAula"));
-                    observacion.setDescripcion(rs.getString("descripcion"));
-                    observacion.setFechaObservacion(rs.getObject("fechaObservacion", Fecha.class));
-                    return observacion;
-                }
-            }
-        }
-        return null;
-    }
-
-    // Método para actualizar una observación existente
-    public void actualizarObservacion(ObservacionDTO observacion) throws SQLException {
-        String sql = "UPDATE Observacion SET numeroAula = ?, descripcion = ?, fechaObservacion = ? " +
-                     "WHERE codigoObservacion = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, observacion.getNumeroAula());
-            ps.setString(2, observacion.getDescripcion());
-            ps.setObject(3, observacion.getFechaObservacion());
-            ps.setInt(4, observacion.getCodigoObservacion());
-            ps.executeUpdate();
-        }
-    }
-
-    // Método para eliminar una observación por su código
-    public void eliminarObservacion(int codigoObservacion) throws SQLException {
-        String sql = "DELETE FROM Observacion WHERE codigoObservacion = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, codigoObservacion);
-            ps.executeUpdate();
-        }
-    }
-
-    // Método para obtener todas las observaciones
-    public List<ObservacionDTO> obtenerTodasLasObservaciones() throws SQLException {
-        List<ObservacionDTO> observaciones = new ArrayList<>();
-        String sql = "SELECT * FROM Observacion";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                ObservacionDTO observacion = new ObservacionDTO();
-                observacion.setCodigoObservacion(rs.getInt("codigoObservacion"));
-                observacion.setNumeroAula(rs.getInt("numeroAula"));
-                observacion.setDescripcion(rs.getString("descripcion"));
-                observacion.setFechaObservacion(rs.getObject("fechaObservacion", Fecha.class));
-                observaciones.add(observacion);
-            }
-        }
-        return observaciones;
-    }
-}
-
+//package paqueteDAO;
+//
+//import paqueteDTO.ObservacionDTO;
+//
+//import java.sql.*;
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//public class ObservacionDAO {
+//    private Connection connection;
+//
+//    public ObservacionDAO(Connection connection) {
+//        this.connection = connection;
+//    }
+//
+//    // Crear una nueva observación
+//    public void crearObservacion(ObservacionDTO observacion, Time horaObservacion) throws SQLException {
+//        String sql = "INSERT INTO Observacion (codigoObservacion, numeroAula, descripcion, fechaObservacion, horaObservacion) VALUES (?, ?, ?, ?, ?)";
+//        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+//            statement.setInt(1, observacion.getCodigoObservacion());
+//            statement.setInt(2, observacion.getNumeroAula());
+//            statement.setString(3, observacion.getDescripcion());
+//            statement.setDate(4, observacion.getFechaObservacion());
+//            statement.setTime(5, horaObservacion);
+//            statement.executeUpdate();
+//        }
+//    }
+//
+//    // Leer todas las observaciones
+//    public List<ObservacionDTO> obtenerTodasLasObservaciones() throws SQLException {
+//        List<ObservacionDTO> observaciones = new ArrayList<>();
+//        String sql = "SELECT * FROM Observacion";
+//        try (Statement statement = connection.createStatement();
+//             ResultSet resultSet = statement.executeQuery(sql)) {
+//            while (resultSet.next()) {
+//                ObservacionDTO observacion = new ObservacionDTO(
+//                        resultSet.getInt("codigoObservacion"),
+//                        resultSet.getInt("numeroAula"),
+//                        resultSet.getString("descripcion"),
+//                        resultSet.getDate("fechaObservacion")
+//                );
+//                observaciones.add(observacion);
+//            }
+//        }
+//        return observaciones;
+//    }
+//
+//    // Actualizar una observación
+//    public void actualizarObservacion(ObservacionDTO observacion, Time horaObservacion) throws SQLException {
+//        String sql = "UPDATE Observacion SET numeroAula = ?, descripcion = ?, fechaObservacion = ?, horaObservacion = ? WHERE codigoObservacion = ?";
+//        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+//            statement.setInt(1, observacion.getNumeroAula());
+//            statement.setString(2, observacion.getDescripcion());
+//            statement.setDate(3, observacion.getFechaObservacion());
+//            statement.setTime(4, horaObservacion);
+//            statement.setInt(5, observacion.getCodigoObservacion());
+//            statement.executeUpdate();
+//        }
+//    }
+//
+//    // Eliminar una observación
+//    public void eliminarObservacion(int codigoObservacion) throws SQLException {
+//        String sql = "DELETE FROM Observacion WHERE codigoObservacion = ?";
+//        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+//            statement.setInt(1, codigoObservacion);
+//            statement.executeUpdate();
+//        }
+//    }
+//
+//    // Obtener una observación por código
+//    public ObservacionDTO obtenerObservacionPorCodigo(int codigoObservacion) throws SQLException {
+//        String sql = "SELECT * FROM Observacion WHERE codigoObservacion = ?";
+//        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+//            statement.setInt(1, codigoObservacion);
+//            try (ResultSet resultSet = statement.executeQuery()) {
+//                if (resultSet.next()) {
+//                    return new ObservacionDTO(
+//                            resultSet.getInt("codigoObservacion"),
+//                            resultSet.getInt("numeroAula"),
+//                            resultSet.getString("descripcion"),
+//                            resultSet.getDate("fechaObservacion")
+//                    );
+//                }
+//            }
+//        }
+//        return null; // No se encontró la observación
+//    }
+//}

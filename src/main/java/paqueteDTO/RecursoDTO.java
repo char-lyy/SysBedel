@@ -2,6 +2,10 @@ package paqueteDTO;
 
 public class RecursoDTO {
 
+    int codigoRecurso;
+    String DescripcionRecurso;
+    int cantidadRecurso;
+
     public RecursoDTO(int codigoRecurso, String DescripcionRecurso, int cantidadRecurso) {
         this.codigoRecurso = codigoRecurso;
         this.DescripcionRecurso = DescripcionRecurso;
@@ -31,7 +35,5 @@ public class RecursoDTO {
     public void setCantidadRecurso(int cantidadRecurso) {
         this.cantidadRecurso = cantidadRecurso;
     }
-    int codigoRecurso;
-    String DescripcionRecurso;
-    int cantidadRecurso;
+
 }
