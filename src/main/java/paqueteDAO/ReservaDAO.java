@@ -1,153 +1,145 @@
 package paqueteDAO;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import paqueteDTO.ReservaDTO;
-import paqueteDTO.FechaDTO;
 import paqueteDTO.TiempoDTO;
-import principal.ConnectionManager;
 
 public class ReservaDAO {
 
-    private static final String INSERT_RESERVA_SQL = "INSERT INTO reservas (id_reserva, id_actividad, numero_aula, confirmada, hora_inicio, hora_fin, fecha_reserva, fecha_actividad) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE_RESERVA_SQL = "UPDATE reservas SET id_actividad = ?, numero_aula = ?, confirmada = ?, hora_inicio = ?, hora_fin = ?, fecha_reserva = ?, fecha_actividad = ? WHERE id_reserva = ?";
-    private static final String DELETE_RESERVA_SQL = "DELETE FROM reservas WHERE id_reserva = ?";
-    private static final String SELECT_RESERVA_BY_ID = "SELECT * FROM reservas WHERE id_reserva = ?";
-    private static final String SELECT_ALL_RESERVAS = "SELECT * FROM reservas";
-    private final ConnectionManager cm = new ConnectionManager();
+    private Connection connection;
 
-    // Método para verificar si hay un choque de horarios
-    public boolean hayConflictoDeHorario(ReservaDTO reserva) throws SQLException {
-        String query = "SELECT * FROM reserva WHERE numeroAula = ? AND fechaActividad = ? AND confirmada = true "
-                + "AND (horaInicio < ? AND horaFin > ?)"; // Verificamos que los horarios no se solapen.
+    public ReservaDAO(Connection connection) {
+        this.connection = connection;
+    }
 
-        try (PreparedStatement ps = cm.getConnection().prepareStatement(query)) {
-            ps.setInt(1, reserva.getNumeroAula());
-            ps.setDate(2, reserva.getFechaActividad().toSqlDate());
-            ps.setTime(3, reserva.getHoraFin().toSqlTime()); // Se usa la hora de fin para la validación.
-            ps.setTime(4, reserva.getHoraInicio().toSqlTime()); // Se usa la hora de inicio para la validación.
+    /**
+     * Devuelve una lista con las aulas disponibles
+     *
+     * @param fecha
+     * @param horaInicio
+     * @param horaFin
+     * @return
+     * @throws SQLException
+     */
+    public List<Integer> obtenerAulasDisponibles(java.sql.Date fecha, TiempoDTO horaInicio, TiempoDTO horaFin) throws SQLException {
+        List<Integer> aulasDisponibles = new ArrayList<>();
 
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // Si hay un resultado, significa que existe un conflicto de horarios.
+        String queryAulas = "SELECT numeroAula FROM Aula";
+        try (PreparedStatement stmtAulas = connection.prepareStatement(queryAulas); ResultSet rsAulas = stmtAulas.executeQuery()) {
+
+            // Almacenar todas las aulas en una lista temporal
+            List<Integer> todasLasAulas = new ArrayList<>();
+            while (rsAulas.next()) {
+                todasLasAulas.add(rsAulas.getInt("numeroAula"));
             }
-        }
-    }
 
-    // Método para insertar la reserva si no hay conflicto
-    public boolean insertarReserva(ReservaDTO reserva) throws SQLException {
-        if (hayConflictoDeHorario(reserva)) {
-            System.out.println("No se puede realizar la reserva. Existe un conflicto de horarios.");
-            return false; // Hay conflicto de horarios.
-        }
+            // 2. Verificar qué aulas ya están reservadas en la fecha y horario dada
+            String queryReservas = "SELECT numeroAula FROM Reserva WHERE fechaActividad = ? "
+                    + "AND ((horaInicio < ? AND horaFin > ?) OR (horaInicio < ? AND horaFin > ?))";
+            try (PreparedStatement stmtReservas = connection.prepareStatement(queryReservas)) {
+                stmtReservas.setDate(1, fecha);
+                stmtReservas.setTime(2, horaFin.toSqlTime());
+                stmtReservas.setTime(3, horaInicio.toSqlTime());
+                stmtReservas.setTime(4, horaInicio.toSqlTime());
+                stmtReservas.setTime(5, horaFin.toSqlTime());
+                ResultSet rsReservas = stmtReservas.executeQuery();
 
-//        String query = "INSERT INTO reserva (idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad) "
-//                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                // Almacenar las aulas que ya están reservadas en la fecha y hora
+                List<Integer> aulasReservadas = new ArrayList<>();
+                while (rsReservas.next()) {
+                    aulasReservadas.add(rsReservas.getInt("numeroAula"));
+                }
 
-        try (PreparedStatement ps = cm.getConnection().prepareStatement(INSERT_RESERVA_SQL)) {
-            ps.setInt(1, reserva.getIdActividad());
-            ps.setInt(2, reserva.getNumeroAula());
-            ps.setBoolean(3, reserva.isConfirmada());
-            ps.setTime(4, reserva.getHoraInicio().toSqlTime());
-            ps.setTime(5, reserva.getHoraFin().toSqlTime());
-            ps.setDate(6, reserva.getFechaReserva().toSqlDate());
-            ps.setDate(7, reserva.getFechaActividad().toSqlDate());
-
-            ps.executeUpdate();
-            return true; // La reserva se insertó exitosamente.
-        }
-    }
-
-    public void actualizarReserva(ReservaDTO reserva) throws SQLException {
-        try (Connection connection = cm.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_RESERVA_SQL)) {
-            preparedStatement.setInt(1, reserva.getIdActividad());
-            preparedStatement.setInt(2, reserva.getNumeroAula());
-            preparedStatement.setBoolean(3, reserva.isConfirmada());
-            preparedStatement.setTime(4, Time.valueOf(reserva.getHoraInicio().toString()));
-            preparedStatement.setTime(5, Time.valueOf(reserva.getHoraFin().toString()));
-            preparedStatement.setDate(6, reserva.getFechaReserva().toSqlDate());
-            preparedStatement.setDate(7, reserva.getFechaActividad().toSqlDate());
-            preparedStatement.setInt(8, reserva.getIdReserva());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            printSQLException(e);
-        }
-    }
-
-    public boolean eliminarReserva(int idReserva) throws SQLException {
-        boolean rowDeleted;
-        try (Connection connection = cm.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(DELETE_RESERVA_SQL)) {
-            preparedStatement.setInt(1, idReserva);
-            rowDeleted = preparedStatement.executeUpdate() > 0;
-        }
-        return rowDeleted;
-    }
-
-    public ReservaDTO seleccionarReserva(int idReserva) {
-        ReservaDTO reserva = null;
-        try (Connection connection = cm.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SELECT_RESERVA_BY_ID)) {
-            preparedStatement.setInt(1, idReserva);
-            ResultSet rs = preparedStatement.executeQuery();
-
-            if (rs.next()) {
-                int idActividad = rs.getInt("id_actividad");
-                int numeroAula = rs.getInt("numero_aula");
-                boolean confirmada = rs.getBoolean("confirmada");
-                TiempoDTO horaInicio = TiempoDTO.fromSqlTime(rs.getTime("hora_inicio"));
-                TiempoDTO horaFin = TiempoDTO.fromSqlTime(rs.getTime("hora_fin"));
-                FechaDTO fechaReserva = FechaDTO.fromSqlDate(rs.getDate("fecha_reserva"));
-                FechaDTO fechaActividad = FechaDTO.fromSqlDate(rs.getDate("fecha_actividad"));
-
-                reserva = new ReservaDTO(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad);
-            }
-        } catch (SQLException e) {
-            printSQLException(e);
-        }
-        return reserva;
-    }
-
-    public List<ReservaDTO> seleccionarTodasLasReservas() {
-        List<ReservaDTO> reservas = new ArrayList<>();
-        try (Connection connection = cm.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_RESERVAS)) {
-            ResultSet rs = preparedStatement.executeQuery();
-
-            while (rs.next()) {
-                int idReserva = rs.getInt("id_reserva");
-                int idActividad = rs.getInt("id_actividad");
-                int numeroAula = rs.getInt("numero_aula");
-                boolean confirmada = rs.getBoolean("confirmada");
-                TiempoDTO horaInicio = TiempoDTO.fromSqlTime(rs.getTime("hora_inicio"));
-                TiempoDTO horaFin = TiempoDTO.fromSqlTime(rs.getTime("hora_fin"));
-                FechaDTO fechaReserva = FechaDTO.fromSqlDate(rs.getDate("fecha_reserva"));
-                FechaDTO fechaActividad = FechaDTO.fromSqlDate(rs.getDate("fecha_actividad"));
-
-                reservas.add(new ReservaDTO(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad));
-            }
-        } catch (SQLException e) {
-            printSQLException(e);
-        }
-        return reservas;
-    }
-
-    private void printSQLException(SQLException ex) {
-        for (Throwable e : ex) {
-            if (e instanceof SQLException) {
-                e.printStackTrace(System.err);
-                System.err.println("SQLState: " + ((SQLException) e).getSQLState());
-                System.err.println("Error Code: " + ((SQLException) e).getErrorCode());
-                System.err.println("Message: " + e.getMessage());
-                Throwable t = ex.getCause();
-                while (t != null) {
-                    System.out.println("Cause: " + t);
-                    t = t.getCause();
+                // 3. Retornar las aulas que no estén reservadas
+                for (Integer aula : todasLasAulas) {
+                    if (!aulasReservadas.contains(aula)) {
+                        aulasDisponibles.add(aula);
+                    }
                 }
             }
         }
+        return aulasDisponibles;
+    }
+
+    // Método para insertar una nueva reserva solo si hay aulas disponibles
+    public boolean insertarReserva(ReservaDTO reserva) throws SQLException {
+
+        // 1. Obtener aulas disponibles para la fecha y hora de la reserva
+        List<Integer> aulasDisponibles = obtenerAulasDisponibles(
+                reserva.getFechaActividad().toSqlDate(),
+                reserva.getHoraInicio(),
+                reserva.getHoraFin()
+        );
+
+        // Verificar si el aula específica está disponible en la lista de aulas disponibles
+        if (!aulasDisponibles.contains(reserva.getNumeroAula())) {
+            System.out.println("No hay aulas disponibles o el aula solicitada ya está reservada.");
+            return false;
+        }
+
+        // 2. Si todo está bien, realizar la inserción en la base de datos
+        String query = "INSERT INTO Reserva (idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, reserva.getIdReserva());
+            stmt.setInt(2, reserva.getIdActividad());
+            stmt.setInt(3, reserva.getNumeroAula());
+            stmt.setBoolean(4, reserva.isConfirmada());
+            stmt.setTime(5, reserva.getHoraInicio().toSqlTime());
+            stmt.setTime(6, reserva.getHoraFin().toSqlTime());
+            stmt.setDate(7, reserva.getFechaReserva().toSqlDate());
+            stmt.setDate(8, reserva.getFechaActividad().toSqlDate());
+
+            int rowsInserted = stmt.executeUpdate();
+            return rowsInserted > 0;
+        }
+    }
+
+    // Método para verificar si una aula existe en la base de datos
+    public boolean existeAula(int numeroAula) throws SQLException {
+        String query = "SELECT COUNT(*) FROM Aula WHERE numeroAula = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, numeroAula);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    // Método para verificar si una actividad existe en la base de datos
+    public boolean existeActividad(int idActividad) throws SQLException {
+        String query = "SELECT COUNT(*) FROM Actividad WHERE idActividad = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, idActividad);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    // Método para verificar si hay un conflicto de horario para un aula específica
+    public boolean hayConflictoDeHorario(ReservaDTO reserva) throws SQLException {
+        String query = "SELECT COUNT(*) FROM Reserva WHERE numeroAula = ? AND fechaActividad = ? "
+                + "AND ((horaInicio < ? AND horaFin > ?) OR (horaInicio < ? AND horaFin > ?))";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, reserva.getNumeroAula());
+            stmt.setDate(2, Date.valueOf(reserva.getFechaActividad().toString()));
+            stmt.setTime(3, Time.valueOf(reserva.getHoraFin().toString()));
+            stmt.setTime(4, Time.valueOf(reserva.getHoraInicio().toString()));
+            stmt.setTime(5, Time.valueOf(reserva.getHoraInicio().toString()));
+            stmt.setTime(6, Time.valueOf(reserva.getHoraFin().toString()));
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
     }
 }

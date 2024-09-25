@@ -1,5 +1,7 @@
 package paqueteDTO;
 
+import java.sql.Date;
+
 public class ReservaDTO {
 
     private int idReserva;
@@ -22,6 +24,13 @@ public class ReservaDTO {
         this.fechaActividad = fechaActividad;
     }
 
+    public ReservaDTO(int idActividad, int numeroAula, FechaDTO fechaReserva) {
+        this.idActividad = idActividad;
+        this.numeroAula = numeroAula;
+        this.fechaReserva = fechaReserva;
+    }
+    
+    
     public int getIdReserva() {
         return idReserva;
     }

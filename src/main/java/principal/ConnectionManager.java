@@ -39,5 +39,16 @@ public class ConnectionManager {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ConnectionManager{");
+        sb.append("connection=").append(connection);
+        sb.append('}');
+        return sb.toString();
+    }
+    
+    
 }
 

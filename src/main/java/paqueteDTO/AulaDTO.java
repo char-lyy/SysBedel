@@ -6,12 +6,6 @@ public class AulaDTO {
     private int capacidad;
     private boolean ocupada;
 
-    public AulaDTO(int nroAula, int capacidad) {
-        this.nroAula = nroAula;
-        this.capacidad = capacidad;
-        ocupada = false;
-    }
-
     public AulaDTO(int nroAula, int capacidad, boolean ocupada) {
         this.nroAula = nroAula;
         this.capacidad = capacidad;
