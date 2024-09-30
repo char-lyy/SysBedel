@@ -13,7 +13,12 @@ public class ActividadDAO {
         this.connection = connection;
     }
 
-    // Método para insertar una actividad en la base de datos
+    /**
+     * Inserta una actividad academica
+     * @param actividad dto del paquete 
+     * @return verdadero si se inserto la actividad
+     * @throws SQLException 
+     */
     public boolean insertarActividad(ActividadDTO actividad) throws SQLException {
         String query = "INSERT INTO actividad (idActividad, fechaInicio, fechaFin, periodoActividad, tipoActividad) "
                      + "VALUES (?, ?, ?, ?, ?)";
