@@ -6,7 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class ActividadDAO {
-
+    
+    //hola esto es una prueba
     private Connection connection;
 
     public ActividadDAO(Connection connection) {
