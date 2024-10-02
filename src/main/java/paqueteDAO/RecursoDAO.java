@@ -8,13 +8,23 @@ import java.util.List;
 public class RecursoDAO {
 
     private Connection connection;
+    
+    /**
+     * Constructor que recibe una conexión a la base de datos.
+     * @param connection 
+     */
 
-    // Constructor que recibe una conexión a la base de datos
     public RecursoDAO(Connection connection) {
         this.connection = connection;
     }
+    
+    /**
+     * Método para agregar un nuevo recurso
+     * @param recurso
+     * @return verdadero si s agrego un nuevo recurso correctamente.
+     * @throws SQLException 
+     */
 
-    // Método para agregar un nuevo recurso
     public boolean agregarRecurso(RecursoDTO recurso) throws SQLException {
         String query = "INSERT INTO Recurso (codigoRecurso, DescripcionRecurso, cantidadRecurso) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -26,8 +36,14 @@ public class RecursoDAO {
             return filasInsertadas > 0;
         }
     }
+    
+    /**
+     * Método para obtener un recurso por su código
+     * @param codigoRecurso
+     * @return recurso.
+     * @throws SQLException 
+     */
 
-    // Método para obtener un recurso por su código
     public RecursoDTO obtenerRecursoPorCodigo(int codigoRecurso) throws SQLException {
         String query = "SELECT * FROM Recurso WHERE codigoRecurso = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -42,8 +58,14 @@ public class RecursoDAO {
         }
         return null;
     }
+    
+    /**
+     * Método para actualizar un recurso
+     * @param recurso
+     * @return verdadero si se actualizo correctamente un recurso
+     * @throws SQLException 
+     */
 
-    // Método para actualizar un recurso
     public boolean actualizarRecurso(RecursoDTO recurso) throws SQLException {
         String query = "UPDATE Recurso SET DescripcionRecurso = ?, cantidadRecurso = ? WHERE codigoRecurso = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -55,8 +77,14 @@ public class RecursoDAO {
             return filasActualizadas > 0;
         }
     }
+    
+    /**
+     * Método para eliminar un recurso por su código
+     * @param codigoRecurso
+     * @return verdadero si se elimino correctamente un recurso por su codigo.
+     * @throws SQLException 
+     */
 
-    // Método para eliminar un recurso por su código
     public boolean eliminarRecurso(int codigoRecurso) throws SQLException {
         String query = "DELETE FROM Recurso WHERE codigoRecurso = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -66,8 +94,13 @@ public class RecursoDAO {
             return filasEliminadas > 0;
         }
     }
+    
+    /**
+     * Método para obtener todos los recursos
+     * @return los recuros obtenidos
+     * @throws SQLException 
+     */
 
-    // Método para obtener todos los recursos
     public List<RecursoDTO> obtenerTodosLosRecursos() throws SQLException {
         List<RecursoDTO> recursos = new ArrayList<>();
         String query = "SELECT * FROM Recurso";

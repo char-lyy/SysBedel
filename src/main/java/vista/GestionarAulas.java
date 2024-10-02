@@ -20,6 +20,10 @@ public class GestionarAulas extends JFrame {
     private JCheckBox checkBoxOcupada;
     private JTable tableAulas;
     private DefaultTableModel tableModel;
+    
+    /**
+     * Constructor que configura la interfaz de la clase.
+     */
 
     public GestionarAulas() {
         setTitle("Gestionar Aulas");
@@ -131,8 +135,10 @@ public class GestionarAulas extends JFrame {
         // Cargar las aulas reservadas en la tabla
         cargarAulas();
     }
-
-    // Método para registrar aula en la base de datos
+    
+    /**
+     * Método para registrar aula en la base de datos
+     */
     private void registrarAula() {
         try {
             int nroAula = Integer.parseInt(textNumeroAula.getText());
@@ -157,8 +163,11 @@ public class GestionarAulas extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al registrar aula: " + ex.getMessage());
         }
     }
+    
+    /**
+     * Método para cargar las aulas desde la base de datos
+     */
 
-    // Método para cargar las aulas desde la base de datos
     private void cargarAulas() {
         tableModel.setRowCount(0);  // Limpiar la tabla
         String query = "SELECT numero_aula, capacidad, ocupada FROM aulas";
@@ -178,8 +187,11 @@ public class GestionarAulas extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar aulas: " + ex.getMessage());
         }
     }
+    
+    /**
+     * Método para modificar una aula seleccionada
+     */
 
-    // Método para modificar una aula seleccionada
     private void modificarAula() {
         try {
             int nroAula = Integer.parseInt(textNumeroAula.getText());
@@ -203,8 +215,11 @@ public class GestionarAulas extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al modificar aula: " + ex.getMessage());
         }
     }
+    
+    /**
+     * Método para cancelar una aula seleccionada
+     */
 
-    // Método para cancelar una aula seleccionada
     private void cancelarAula() {
         try {
             int nroAula = Integer.parseInt(textNumeroAula.getText());

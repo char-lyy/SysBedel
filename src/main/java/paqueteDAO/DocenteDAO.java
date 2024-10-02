@@ -8,12 +8,21 @@ import java.util.List;
 
 public class DocenteDAO {
     private Connection connection;
+    
+    /**
+     * Constructor de la clase que permite la conexion con la Base de Datos.
+     * @param connection 
+     */
 
     public DocenteDAO(Connection connection) {
         this.connection = connection;
     }
+    /**
+     * Crear un nuevo docente
+     * @param docente
+     * @throws SQLException 
+     */
 
-    // Crear un nuevo docente
     public void crearDocente(DocenteDTO docente) throws SQLException {
         String sql = "INSERT INTO docentes (legajoDocente, nombreDocente, apellidoDocente, mailDocente, estadoDocente, tituloDocente, telefonoDocente) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -27,8 +36,14 @@ public class DocenteDAO {
             statement.executeUpdate();
         }
     }
+    
+    /**
+     * Este metodo lee todos los docentes
+     * @return los docentes ingresados.
+     * @throws SQLException 
+     */
 
-    // Leer todos los docentes
+
     public List<DocenteDTO> obtenerTodosLosDocentes() throws SQLException {
         List<DocenteDTO> docentes = new ArrayList<>();
         String sql = "SELECT * FROM docentes";
@@ -49,8 +64,13 @@ public class DocenteDAO {
         }
         return docentes;
     }
+    
+    /**
+     * Metodo para Actualizar un docente 
+     * @param docente
+     * @throws SQLException 
+     */
 
-    // Actualizar un docente
     public void actualizarDocente(DocenteDTO docente) throws SQLException {
         String sql = "UPDATE docentes SET nombreDocente = ?, apellidoDocente = ?, mailDocente = ?, estadoDocente = ?, tituloDocente = ?, telefonoDocente = ? WHERE legajoDocente = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -64,8 +84,13 @@ public class DocenteDAO {
             statement.executeUpdate();
         }
     }
+    
+    /**
+     * Metodo para eliminar un docente.
+     * @param legajo
+     * @throws SQLException 
+     */
 
-    // Eliminar un docente
     public void eliminarDocente(String legajo) throws SQLException {
         String sql = "DELETE FROM docentes WHERE legajoDocente = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -73,8 +98,13 @@ public class DocenteDAO {
             statement.executeUpdate();
         }
     }
-
-    // Obtener un docente por legajo
+    
+    /**
+     * Obtener un docente por legajo
+     * @param legajo
+     * @return el docente por legajo.
+     * @throws SQLException 
+     */
     public DocenteDTO obtenerDocentePorLegajo(String legajo) throws SQLException {
         String sql = "SELECT * FROM docentes WHERE legajoDocente = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

@@ -11,13 +11,21 @@ import java.util.List;
 public class DepartamentoDAO {
 
     private Connection connection;
+    /**
+     * Constructor que recibe una conexión a la base de datos
+     * @param connection 
+     */
 
-    // Constructor que recibe una conexión a la base de datos
     public DepartamentoDAO(Connection connection) {
         this.connection = connection;
     }
+    
+    /**
+     * Método para agregar un nuevo departamento,
+     * @param departamento
+     * @return verdadero si se pudo agregar un nuevo departamento.
+     */
 
-    // Método para agregar un nuevo departamento
     public boolean agregarDepartamento(DepartamentoDTO departamento) {
         String sql = "INSERT INTO departamento (codigoDepartamento, nombreDepartamento) VALUES (?, ?)";
         PreparedStatement ps = null;
@@ -33,8 +41,13 @@ public class DepartamentoDAO {
             cerrarRecursos(ps, null);
         }
     }
+    
+    /**
+     * Método para obtener un departamento por su código.
+     * @param codigoDepartamento
+     * @return verdadero si se pudo obtener un departamento por su codigo.
+     */
 
-    // Método para obtener un departamento por su código
     public DepartamentoDTO obtenerDepartamentoPorCodigo(int codigoDepartamento) {
         String sql = "SELECT * FROM departamento WHERE codigoDepartamento = ?";
         PreparedStatement ps = null;
@@ -56,8 +69,13 @@ public class DepartamentoDAO {
         }
         return null; // Devuelve null si no se encontró el departamento
     }
+    
+    /**
+     * Método para obtener todos los departamentos
+     * @return todos los departamentos.
+     */
 
-    // Método para obtener todos los departamentos
+
     public List<DepartamentoDTO> obtenerTodosLosDepartamentos() {
         List<DepartamentoDTO> departamentos = new ArrayList<>();
         String sql = "SELECT * FROM departamento";
@@ -80,8 +98,13 @@ public class DepartamentoDAO {
         }
         return departamentos;
     }
+    
+    /**
+     * Método para actualizar un departamento
+     * @param departamento
+     * @return verdadero si se pudo actualizar un departamento.
+     */
 
-    // Método para actualizar un departamento
     public boolean actualizarDepartamento(DepartamentoDTO departamento) {
         String sql = "UPDATE departamento SET nombreDepartamento = ? WHERE codigoDepartamento = ?";
         PreparedStatement ps = null;
@@ -97,8 +120,12 @@ public class DepartamentoDAO {
             cerrarRecursos(ps, null);
         }
     }
+    /**
+     * Método para eliminar un departamento por su código
+     * @param codigoDepartamento
+     * @return verdadero si se elimino un departamento por su codigo.
+     */
 
-    // Método para eliminar un departamento por su código
     public boolean eliminarDepartamento(int codigoDepartamento) {
         String sql = "DELETE FROM departamento WHERE codigoDepartamento = ?";
         PreparedStatement ps = null;
@@ -113,8 +140,13 @@ public class DepartamentoDAO {
             cerrarRecursos(ps, null);
         }
     }
+    
+    /**
+     * Método para cerrar recursos como PreparedStatement y ResultSet
+     * @param ps
+     * @param rs 
+     */
 
-    // Método para cerrar recursos como PreparedStatement y ResultSet
     private void cerrarRecursos(PreparedStatement ps, ResultSet rs) {
         if (rs != null) {
             try {

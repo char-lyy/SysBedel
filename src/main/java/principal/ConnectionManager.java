@@ -24,11 +24,20 @@ public class ConnectionManager {
             System.err.println("Error de conexión a la base de datos: " + e.getMessage());
         }
     }
+    
+    /**
+     * Método para obtener la conexión a la base de datos.
+     * @return verdadero si se pudo realizar la conexion.
+     * @throws SQLException 
+     */
 
-  // Método para obtener la conexión a la base de datos
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DB_URL, USER, PASSWORD);
     }
+    
+    /**
+     * Metodo para cerrar la conexion.
+     */
 
     public void close() {
         if (connection != null) {

@@ -15,6 +15,10 @@ public class GestionarInformes extends JFrame {
 
     private DefaultTableModel tableModel;
     private JTable tableInformes;
+    
+    /**
+     * Constructor que configura la interfaz de la clase.
+     */
 
     public GestionarInformes() {
         setTitle("Gestionar Informes");
@@ -96,8 +100,13 @@ public class GestionarInformes extends JFrame {
         // Cargar los informes al iniciar la ventana
         cargarInformes();
     }
+    
+    /**
+     * Método para generar un informe en la base de datos
+     * @param nroAula
+     * @param descripcion 
+     */
 
-    // Método para generar un informe en la base de datos
     private void generarInforme(int nroAula, String descripcion) {
         String query = "INSERT INTO informes (numero_aula, descripcion) VALUES (?, ?)";
         try (Connection connection = ConnectionManager.getConnection();
@@ -112,8 +121,11 @@ public class GestionarInformes extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al generar informe: " + ex.getMessage());
         }
     }
+    
+    /**
+     * Método para cargar los informes de la base de datos en la tabla
+     */
 
-    // Método para cargar los informes de la base de datos en la tabla
     private void cargarInformes() {
         String query = "SELECT numero_aula, descripcion FROM informes";
         try (Connection connection = ConnectionManager.getConnection();

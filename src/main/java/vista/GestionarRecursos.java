@@ -13,6 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class GestionarRecursos extends JFrame {
+    
+    /**
+     * Constructor que configura la interfaz de la clase.
+     */
 
     public GestionarRecursos() {
         setTitle("Gestionar Recursos");
@@ -98,8 +102,12 @@ public class GestionarRecursos extends JFrame {
         // Añadir el panel principal a la ventana
         add(mainPanel);
     }
+    
+    /**
+     * Método para registrar recurso en la base de datos
+     * @param recurso 
+     */
 
-    // Método para registrar recurso en la base de datos
     private void registrarRecurso(RecursoDTO recurso) {
         String query = "INSERT INTO recursos (descripcion_recurso, cantidad_recurso) VALUES (?, ?)";
         try (Connection connection = ConnectionManager.getConnection();
@@ -114,8 +122,10 @@ public class GestionarRecursos extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al registrar recurso: " + ex.getMessage());
         }
     }
-
-    // Método para consultar los recursos en la base de datos
+    
+    /**
+     * Método para consultar los recursos en la base de datos
+     */
     private void consultarRecursos() {
         String query = "SELECT codigo_recurso, descripcion_recurso, cantidad_recurso FROM recursos";
         try (Connection connection = ConnectionManager.getConnection();

@@ -9,6 +9,11 @@ import paqueteDTO.TiempoDTO;
 public class ReservaDAO {
 
     private Connection connection;
+    
+    /**
+     * Constructor de la clase que permite la conexion con la Base de Datos.
+     * @param connection 
+     */
 
     public ReservaDAO(Connection connection) {
         this.connection = connection;
@@ -62,8 +67,14 @@ public class ReservaDAO {
         }
         return aulasDisponibles;
     }
+    
+    /**
+     * Método para insertar una nueva reserva solo si hay aulas disponibles
+     * @param reserva
+     * @return verdadero si se inserto adecuadamente un aula.
+     * @throws SQLException 
+     */
 
-    // Método para insertar una nueva reserva solo si hay aulas disponibles
     public boolean insertarReserva(ReservaDTO reserva) throws SQLException {
 
         // 1. Obtener aulas disponibles para la fecha y hora de la reserva
@@ -96,8 +107,14 @@ public class ReservaDAO {
             return rowsInserted > 0;
         }
     }
+    
+    /**
+     * Método para verificar si una aula existe en la base de datos
+     * @param numeroAula
+     * @return verdadero si existe el aula.
+     * @throws SQLException 
+     */
 
-    // Método para verificar si una aula existe en la base de datos
     public boolean existeAula(int numeroAula) throws SQLException {
         String query = "SELECT COUNT(*) FROM Aula WHERE numeroAula = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -109,8 +126,14 @@ public class ReservaDAO {
         }
         return false;
     }
+    
+    /**
+     * Método para verificar si una actividad existe en la base de datos
+     * @param idActividad
+     * @return verdadero si existe una actividad.
+     * @throws SQLException 
+     */
 
-    // Método para verificar si una actividad existe en la base de datos
     public boolean existeActividad(int idActividad) throws SQLException {
         String query = "SELECT COUNT(*) FROM Actividad WHERE idActividad = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -122,8 +145,14 @@ public class ReservaDAO {
         }
         return false;
     }
+    
+    /**
+     * Método para verificar si hay un conflicto de horario para un aula específica
+     * @param reserva
+     * @return verdadero si existe un conflicto de horarios para un aula.
+     * @throws SQLException 
+     */
 
-    // Método para verificar si hay un conflicto de horario para un aula específica
     public boolean hayConflictoDeHorario(ReservaDTO reserva) throws SQLException {
         String query = "SELECT COUNT(*) FROM Reserva WHERE numeroAula = ? AND fechaActividad = ? "
                 + "AND ((horaInicio < ? AND horaFin > ?) OR (horaInicio < ? AND horaFin > ?))";

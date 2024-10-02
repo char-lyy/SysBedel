@@ -8,12 +8,21 @@ import java.util.List;
 public class AulaDAO {
 
     private Connection connection;
+    /**
+     * Constructor de la clase que permite la conexion con la Base de Datos.
+     * @param connection 
+     */
 
     public AulaDAO(Connection connection) {
         this.connection = connection;
     }
+    /**
+     * Método para agregar una nueva aula
+     * @param aula
+     * @throws SQLException 
+     */
 
-    // Método para agregar una nueva aula
+
     public void agregarAula(AulaDTO aula) throws SQLException {
         String sql = "INSERT INTO Aula (nroAula, capacidad, ocupada) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -23,8 +32,14 @@ public class AulaDAO {
             statement.executeUpdate();
         }
     }
+    
+    /**
+     * Método para obtener todas las aulas
+     * @return las aulas.
+     * @throws SQLException 
+     */
 
-    // Método para obtener todas las aulas
+
     public List<AulaDTO> obtenerTodasLasAulas() throws SQLException {
         List<AulaDTO> aulas = new ArrayList<>();
         String sql = "SELECT * FROM Aula";
@@ -42,8 +57,12 @@ public class AulaDAO {
 
         return aulas;
     }
+    /**
+     * Método para obtener aulas no ocupadas.
+     * @return las aulas no ocupadas.
+     * @throws SQLException 
+     */
 
-    // Método para obtener aulas no ocupadas
     public List<AulaDTO> obtenerAulasNoOcupadas() throws SQLException {
         List<AulaDTO> aulasNoOcupadas = new ArrayList<>();
         String sql = "SELECT * FROM Aula WHERE ocupada = false";
@@ -60,8 +79,13 @@ public class AulaDAO {
 
         return aulasNoOcupadas;
     }
+    
+    /**
+     * Método para obtener aulas ocupadas
+     * @return las aulas ocupadas
+     * @throws SQLException 
+     */
 
-    // Método para obtener aulas ocupadas
     public List<AulaDTO> obtenerAulasOcupadas() throws SQLException {
         List<AulaDTO> aulasOcupadas = new ArrayList<>();
         String sql = "SELECT * FROM Aula WHERE ocupada = true";
@@ -78,8 +102,14 @@ public class AulaDAO {
 
         return aulasOcupadas;
     }
+    
+    /**
+     * Método para actualizar el estado de ocupación de un aula.
+     * @param nroAula
+     * @param ocupada
+     * @throws SQLException 
+     */
 
-    // Método para actualizar el estado de ocupación de un aula
     public void actualizarOcupacion(int nroAula, boolean ocupada) throws SQLException {
         String sql = "UPDATE Aula SET ocupada = ? WHERE nroAula = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

@@ -8,6 +8,10 @@ import java.awt.event.ActionListener;
 import java.util.Calendar;
 
 public class GestionarActividades extends JFrame {
+    
+    /**
+     * Constructor que configura la interfaz de la clase.
+     */
 
     public GestionarActividades() {
         setTitle("Gestionar Actividades Académicas");

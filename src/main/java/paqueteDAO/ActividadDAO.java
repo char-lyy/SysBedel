@@ -7,8 +7,12 @@ import java.sql.SQLException;
 
 public class ActividadDAO {
     
-    //hola esto es una prueba
     private Connection connection;
+    
+    /**
+     * Constructor de la clase que permite la conexion con la Base de Datos.
+     * @param connection 
+     */
 
     public ActividadDAO(Connection connection) {
         this.connection = connection;
@@ -35,8 +39,13 @@ public class ActividadDAO {
             return rowsInserted > 0;
         }
     }
+    /**
+     * Método para actualizar una actividad existente en la base de datos.
+     * @param actividad
+     * @return
+     * @throws SQLException 
+     */
 
-    // Método para actualizar una actividad existente en la base de datos
     public boolean actualizarActividad(ActividadDTO actividad) throws SQLException {
         String query = "UPDATE actividad SET fechaInicio = ?, fechaFin = ?, periodoActividad = ?, tipoActividad = ? "
                      + "WHERE idActividad = ?";
@@ -52,8 +61,13 @@ public class ActividadDAO {
             return rowsUpdated > 0;
         }
     }
+    /**
+     * Método para eliminar una actividad de la base de datos.
+     * @param idActividad
+     * @return
+     * @throws SQLException 
+     */
 
-    // Método para eliminar una actividad de la base de datos
     public boolean eliminarActividad(int idActividad) throws SQLException {
         String query = "DELETE FROM actividad WHERE idActividad = ?";
 
