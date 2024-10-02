@@ -25,8 +25,9 @@ public class ConnectionManager {
         }
     }
 
-    public Connection getConnection() {
-        return connection;
+  // Método para obtener la conexión a la base de datos
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL, USER, PASSWORD);
     }
 
     public void close() {
