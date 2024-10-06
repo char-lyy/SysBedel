@@ -1,6 +1,7 @@
 package paqueteDTO;
 
 import java.sql.Date;
+import java.time.DayOfWeek;
 
 public class ReservaDTO {
 
@@ -12,14 +13,27 @@ public class ReservaDTO {
     private TiempoDTO horaFin;
     private FechaDTO fechaReserva;
     private FechaDTO fechaActividad;
-
-    public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, TiempoDTO horaInicio, TiempoDTO horaFin, FechaDTO fechaReserva, FechaDTO fechaActividad) {
+    private DayOfWeek diaActividadPeriodica;
+    private String descripcion;
+    
+    public ReservaDTO(int idActividad, int numeroAula, TiempoDTO horaInicio, TiempoDTO horaFin, FechaDTO fechaActividad, String descripcion) {
+        this.idActividad = idActividad;
+        this.numeroAula = numeroAula;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+        this.fechaActividad = fechaActividad;
+        this.descripcion = descripcion;
+    }
+    
+    
+    public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, TiempoDTO horaInicio, TiempoDTO horaFin, FechaDTO fechaReserva, FechaDTO fechaActividad, String descripcion) {
         this.idReserva = idReserva;
         this.idActividad = idActividad;
         this.numeroAula = numeroAula;
         this.confirmada = confirmada;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
+        this.descripcion = descripcion;
         this.fechaReserva = fechaReserva;
         this.fechaActividad = fechaActividad;
     }
@@ -29,7 +43,15 @@ public class ReservaDTO {
         this.numeroAula = numeroAula;
         this.fechaReserva = fechaReserva;
     }
-    
+
+    public ReservaDTO(int idActividad, int numeroAula, TiempoDTO horaInicio, TiempoDTO horaFin, DayOfWeek diaSemana, String descripcion) {
+        this.idActividad = idActividad;
+        this.numeroAula = numeroAula;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+        this.diaActividadPeriodica = diaSemana;
+        this.descripcion = descripcion;
+    }
     
     public int getIdReserva() {
         return idReserva;
@@ -95,4 +117,21 @@ public class ReservaDTO {
         this.fechaActividad = fechaActividad;
     }
 
+    public DayOfWeek getDiaActividadPeriodica() {
+        return diaActividadPeriodica;
+    }
+
+    public void setDiaActividadPeriodica(DayOfWeek diaActividadPeriodica) {
+        this.diaActividadPeriodica = diaActividadPeriodica;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    
+    
 }

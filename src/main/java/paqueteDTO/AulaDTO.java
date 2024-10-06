@@ -12,6 +12,11 @@ public class AulaDTO {
         this.ocupada = ocupada;
     }
 
+    public AulaDTO(int numeroAula, int capacidad) {
+        this.nroAula = numeroAula;
+        this.capacidad = capacidad;
+    }
+
     public int getNroAula() {
         return nroAula;
     }
