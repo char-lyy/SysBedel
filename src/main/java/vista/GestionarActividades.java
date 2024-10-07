@@ -34,23 +34,22 @@ public class GestionarActividades extends JFrame {
     private JComboBox<String> comboBoxDiasSemana;
     private JSpinner spinnerHoraInicio;
     private JSpinner spinnerHoraFin;
-    
+    private JButton buttonMostrarReservas;
     /**
      * Este metodo configura la vista de Actividades.
      */
-
     public GestionarActividades() {
         setTitle("Gestionar Actividades Académicas");
-        setSize(400, 300);
+        setSize(600, 300);
         setLayout(new GridLayout(8, 1));
         setLocationRelativeTo(null);
         inicializarComponentes();
         configurarPanel();
     }
+
     /**
      * Este metodo inicializa los componentes.
      */
-
     private void inicializarComponentes() {
         labelDescripcion = new JLabel("Descripción:");
         textDescripcion = new JTextField();
@@ -60,7 +59,8 @@ public class GestionarActividades extends JFrame {
 
         buttonGuardar = new JButton("Guardar");
         buttonConsultar = new JButton("Consultar Disponibilidad");
-
+        buttonMostrarReservas = new JButton("Mostrar reservas");
+        
         radioButtonAnual = new JRadioButton("Anual");
         radioButtonCuatrimestral = new JRadioButton("Cuatrimestral");
         radioButtonUnico = new JRadioButton("Único");
@@ -81,11 +81,10 @@ public class GestionarActividades extends JFrame {
         spinnerHoraFin = new JSpinner(new SpinnerDateModel());
         spinnerHoraFin.setEditor(new JSpinner.DateEditor(spinnerHoraFin, "HH:mm"));
     }
-    
+
     /**
      * Este metodo configura el panel de la vista.
      */
-
     private void configurarPanel() {
         JPanel panelPeriodo = new JPanel(new GridLayout(1, 4));
         panelPeriodo.add(radioButtonAnual);
@@ -106,25 +105,32 @@ public class GestionarActividades extends JFrame {
         add(spinnerHoraInicio);
         add(new JLabel("Hora fin:"));
         add(spinnerHoraFin);
-        add(buttonGuardar);
-        add(buttonConsultar);
+        
+        JPanel panelDeBotonesInferior = new JPanel();
+        panelDeBotonesInferior.setLayout(new GridLayout(1,3));
+        panelDeBotonesInferior.add(buttonGuardar);
+        panelDeBotonesInferior.add(buttonConsultar);
+        add(buttonMostrarReservas);
+        
+        add(panelDeBotonesInferior);
 
         configurarEventos();
     }
+
     /**
      * Este metodo configura los eventos.
      */
-
     private void configurarEventos() {
 
         configurarRadioButtons();
         configurarBotonGuardar();
         configurarBotonConsultarDisponibilidad();
+        configurarBotonMostrarReservas();
     }
+
     /**
      * Este metodo configura el boton para consultar disponibilidad.
      */
-
     private void configurarBotonConsultarDisponibilidad() {
         buttonConsultar.addActionListener(new ActionListener() {
             @Override
@@ -168,11 +174,10 @@ public class GestionarActividades extends JFrame {
             }
         });
     }
-    
+
     /**
      * Este metodo ocnfigura el boton para guardar.
      */
-
     private void configurarBotonGuardar() {
         buttonGuardar.addActionListener(new ActionListener() {
             @Override
@@ -266,11 +271,10 @@ public class GestionarActividades extends JFrame {
             }
         });
     }
-    
+
     /**
      * Este metodo configura los radio buttons.
      */
-
     private void configurarRadioButtons() {
         radioButtonAnual.addActionListener(new ActionListener() { // Anual
             @Override
@@ -299,24 +303,13 @@ public class GestionarActividades extends JFrame {
         dateChooser.setEnabled(false);
         comboBoxDiasSemana.setEnabled(false);
     }
-    
-    /**
-     * Muestra la interfaz por pantalla.
-     * @param args 
-     */
 
-    public static void main(String[] args) {
-        GestionarActividades frame = new GestionarActividades();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
-    
     /**
      * Este metodo convierte en String a un dia de la semana establecido.
+     *
      * @param dia
-     * @return 
+     * @return
      */
-
     public static DayOfWeek convertirStringADayOfWeek(String dia) {
         switch (dia.toLowerCase()) {
             case "lunes":
@@ -339,4 +332,60 @@ public class GestionarActividades extends JFrame {
                 throw new IllegalArgumentException("Día no válido: " + dia);
         }
     }
+    
+    public void configurarBotonMostrarReservas(){
+           buttonMostrarReservas.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Conexión a la base de datos
+                    ConnectionManager cm = new ConnectionManager();
+                    Connection connection = cm.getConnection();
+                    ReservaDAO reservaDAO = new ReservaDAO(connection);
+
+                    // Obtener fecha y horas seleccionadas
+                    java.util.Date utilDate = dateChooser.getDate();
+                    java.sql.Date fecha = new java.sql.Date(utilDate.getTime());
+
+                    // Obtiene las horas y minutos del spinner
+                    java.util.Date fechaSeleccionada = (java.util.Date) spinnerHoraInicio.getValue();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(fechaSeleccionada);
+
+                    int horasInicio = calendar.get(Calendar.HOUR_OF_DAY);
+                    int minutosInicio = calendar.get(Calendar.MINUTE);
+
+                    fechaSeleccionada = (java.util.Date) spinnerHoraFin.getValue();
+                    calendar = Calendar.getInstance();
+                    calendar.setTime(fechaSeleccionada);
+
+                    int horasFin = calendar.get(Calendar.HOUR_OF_DAY);
+                    int minutosFin = calendar.get(Calendar.MINUTE);
+
+//                    TiempoDTO horaInicio = new TiempoDTO(horasInicio, minutosInicio);
+//                    TiempoDTO horaFin = new TiempoDTO(horasFin, minutosFin);
+
+                    reservaDAO.mostrarTablaReservasPorFecha(fecha);
+
+                    connection.close();
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error al consultar disponibilidad: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+    }
+    /**
+     * Muestra la interfaz por pantalla.
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        GestionarActividades frame = new GestionarActividades();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+
+    }
 }
+

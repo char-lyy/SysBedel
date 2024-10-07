@@ -219,8 +219,11 @@ public class ReservaDAO {
             return rowsInserted > 0;
         }
     }
+
     /**
-     * Se guarda la reserva en base a los horarios establecidos, en caso de que no haya ningun conflicto
+     * Se guarda la reserva en base a los horarios establecidos, en caso de que
+     * no haya ningun conflicto
+     *
      * @param codigoActividad
      * @param aula
      * @param horaInicio
@@ -229,7 +232,7 @@ public class ReservaDAO {
      * @param fechaActividadDTO
      * @param descripcion
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
 
     public boolean guardarReserva(int codigoActividad, String aula, TiempoDTO horaInicio, TiempoDTO horaFin, String diaSemana, FechaDTO fechaActividadDTO, String descripcion) throws SQLException {
@@ -258,7 +261,7 @@ public class ReservaDAO {
             preparedStatement.setString(8, descripcion);
 
             preparedStatement.executeUpdate();
-            
+
             return true;
         }
     }
@@ -327,15 +330,17 @@ public class ReservaDAO {
         }
         return false;
     }
+
     /**
-     * Este metodo realiza la reserva en base a una fecha y horario determinado. 
+     * Este metodo realiza la reserva en base a una fecha y horario determinado.
+     *
      * @param tipoReserva
      * @param diaSeleccionado
      * @param horaInicio
      * @param horaFin
      * @param reserva
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
 
     public boolean realizarReserva(String tipoReserva, String diaSeleccionado, TiempoDTO horaInicio, TiempoDTO horaFin, ReservaDTO reserva) throws SQLException {
@@ -417,12 +422,14 @@ public class ReservaDAO {
             insertarReserva(reserva);
         }
     }
+
     /**
      * Método para calcular la próxima fecha de una reserva semanal
+     *
      * @param fechaInicio
      * @param diaSeleccionado
      * @param diasIncremento
-     * @return 
+     * @return
      */
     private Date calcularFechaProxima(Date fechaInicio, DayOfWeek diaSeleccionado, int diasIncremento) {
         LocalDate fecha = fechaInicio.toLocalDate().plusDays(diasIncremento);
@@ -447,12 +454,12 @@ public class ReservaDAO {
             insertarReserva(reserva);
         }
     }
-    
+
     /**
      * Este metodo obtiene la fecha de inicio del cuatrimestre
+     *
      * @return verdadero si se pudo obtener la fecha.
      */
-
     private Date obtenerFechaInicioCuatrimestre() {
         LocalDate hoy = LocalDate.now();
         LocalDate inicioPrimerCuatrimestre = LocalDate.of(hoy.getYear(), 3, 1)
@@ -466,14 +473,16 @@ public class ReservaDAO {
             return Date.valueOf(inicioSegundoCuatrimestre);
         }
     }
+
     /**
-     * Este metodo verfica si hay reservas que chocan. 
+     * Este metodo verfica si hay reservas que chocan.
+     *
      * @param fechaActividad
      * @param horaInicio
      * @param horaFin
      * @param aula
      * @return verdadero si hay reservas que chocan.
-     * @throws SQLException 
+     * @throws SQLException
      */
 
     public boolean hayReservaEnRango(Date fechaActividad, TiempoDTO horaInicio, TiempoDTO horaFin, String aula) throws SQLException {
@@ -492,6 +501,60 @@ public class ReservaDAO {
             }
         }
         return false; // Retorna false si no hay reservas que chocan
+    }
+
+    public void mostrarTablaReservasPorFecha(Date fecha) {
+        try {
+            // Crear consulta SQL para obtener reservas en la fecha especificada
+            String query = "SELECT numeroAula, horaInicio, horaFin, descripcion FROM Reserva WHERE fechaActividad = ?";
+
+            // Preparar la sentencia SQL
+            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                stmt.setDate(1, fecha);
+                ResultSet rs = stmt.executeQuery();
+
+                // Crear el modelo de la tabla
+                DefaultTableModel model = new DefaultTableModel();
+                model.addColumn("Número de Aula");
+                model.addColumn("Hora Inicio");
+                model.addColumn("Hora Fin");
+                model.addColumn("Descripción");
+
+                // Verificar si se encontraron reservas
+                boolean hayReservas = false;
+                while (rs.next()) {
+                    hayReservas = true;
+                    model.addRow(new Object[]{
+                        rs.getInt("numeroAula"),
+                        rs.getTime("horaInicio"),
+                        rs.getTime("horaFin"),
+                        rs.getString("descripcion")
+                    });
+                }
+
+                // Crear el marco de la ventana
+                JFrame frame = new JFrame("Reservas para " + fecha);
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.setSize(500, 300);
+
+                if (!hayReservas) {
+                    // Mostrar mensaje si no se encontraron reservas
+                    JOptionPane.showMessageDialog(frame, "No se encontraron reservas para la fecha especificada.", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    // Crear el JTable con el modelo y agregarlo al frame
+                    JTable table = new JTable(model);
+                    table.setFillsViewportHeight(true);
+                    JScrollPane scrollPane = new JScrollPane(table);
+                    frame.add(scrollPane, BorderLayout.CENTER);
+                }
+
+                // Hacer visible la ventana
+                frame.setVisible(true);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener reservas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
 }
