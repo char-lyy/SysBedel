@@ -53,7 +53,7 @@ public class FechaDTO implements Comparable {
     }
 
     /**
-     *
+     * Este metodo verifica si el año es bisiesto.
      * @param año
      * @return Verdadero si es bisiesto
      */
@@ -98,7 +98,7 @@ public class FechaDTO implements Comparable {
     }
 
     /**
-     * Método para sumar días a la fecha
+     * Método para sumar días a la fecha.
      *
      * @param dias
      */
@@ -118,7 +118,7 @@ public class FechaDTO implements Comparable {
     /**
      * Obtiene los días restantes en el mes actual
      *
-     * @return
+     * @return los dias restantes.
      */
     private int obtenerDiasRestantesDelMes() {
         int diasMaximos = DIAS_POR_MES[this.mes - 1];
@@ -166,7 +166,7 @@ public class FechaDTO implements Comparable {
      * Valida que la fecha sea correcta luego de cargar por separado el dia, el
      * mes y el año.
      *
-     * @return
+     * @return verdadero si se valida la fecha.
      */
     public FechaDTO cargarDatos() {
 
@@ -192,7 +192,7 @@ public class FechaDTO implements Comparable {
     /**
      * Valida que la fecha sea mayor a 0 y menor a 31.
      *
-     * @return
+     * @return verdadero si se valida la fecha.
      */
     private int cargarDia() {
         int diaEntrante;
@@ -208,7 +208,7 @@ public class FechaDTO implements Comparable {
     /**
      * Valida que el mes sea mayor a 0 y menor que 13
      *
-     * @return
+     * @return verdadero si se valida el mes.
      */
     private int cargarMes() {
         int mesEntrante;
@@ -224,7 +224,7 @@ public class FechaDTO implements Comparable {
     /**
      * Valida que el año sea mayor a 1970
      *
-     * @return
+     * @return verdadero si se valida el año
      */
     private int cargarAño() {
         int añoEntrante;

@@ -34,6 +34,10 @@ public class GestionarActividades extends JFrame {
     private JComboBox<String> comboBoxDiasSemana;
     private JSpinner spinnerHoraInicio;
     private JSpinner spinnerHoraFin;
+    
+    /**
+     * Este metodo configura la vista de Actividades.
+     */
 
     public GestionarActividades() {
         setTitle("Gestionar Actividades Académicas");
@@ -43,6 +47,9 @@ public class GestionarActividades extends JFrame {
         inicializarComponentes();
         configurarPanel();
     }
+    /**
+     * Este metodo inicializa los componentes.
+     */
 
     private void inicializarComponentes() {
         labelDescripcion = new JLabel("Descripción:");
@@ -74,6 +81,10 @@ public class GestionarActividades extends JFrame {
         spinnerHoraFin = new JSpinner(new SpinnerDateModel());
         spinnerHoraFin.setEditor(new JSpinner.DateEditor(spinnerHoraFin, "HH:mm"));
     }
+    
+    /**
+     * Este metodo configura el panel de la vista.
+     */
 
     private void configurarPanel() {
         JPanel panelPeriodo = new JPanel(new GridLayout(1, 4));
@@ -100,6 +111,9 @@ public class GestionarActividades extends JFrame {
 
         configurarEventos();
     }
+    /**
+     * Este metodo configura los eventos.
+     */
 
     private void configurarEventos() {
 
@@ -107,6 +121,9 @@ public class GestionarActividades extends JFrame {
         configurarBotonGuardar();
         configurarBotonConsultarDisponibilidad();
     }
+    /**
+     * Este metodo configura el boton para consultar disponibilidad.
+     */
 
     private void configurarBotonConsultarDisponibilidad() {
         buttonConsultar.addActionListener(new ActionListener() {
@@ -151,6 +168,10 @@ public class GestionarActividades extends JFrame {
             }
         });
     }
+    
+    /**
+     * Este metodo ocnfigura el boton para guardar.
+     */
 
     private void configurarBotonGuardar() {
         buttonGuardar.addActionListener(new ActionListener() {
@@ -245,6 +266,10 @@ public class GestionarActividades extends JFrame {
             }
         });
     }
+    
+    /**
+     * Este metodo configura los radio buttons.
+     */
 
     private void configurarRadioButtons() {
         radioButtonAnual.addActionListener(new ActionListener() { // Anual
@@ -274,12 +299,23 @@ public class GestionarActividades extends JFrame {
         dateChooser.setEnabled(false);
         comboBoxDiasSemana.setEnabled(false);
     }
+    
+    /**
+     * Muestra la interfaz por pantalla.
+     * @param args 
+     */
 
     public static void main(String[] args) {
         GestionarActividades frame = new GestionarActividades();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
+    
+    /**
+     * Este metodo convierte en String a un dia de la semana establecido.
+     * @param dia
+     * @return 
+     */
 
     public static DayOfWeek convertirStringADayOfWeek(String dia) {
         switch (dia.toLowerCase()) {

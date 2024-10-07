@@ -145,6 +145,10 @@ public class GestionarInformes extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar los informes: " + ex.getMessage());
         }
     }
+    /**
+     * Este metodo muestra la interfaz por pantalla.
+     * @param args 
+     */
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

@@ -14,6 +14,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Este metodo configura la vista de Aulas.
+ * @author NETBOOK
+ */
+
 public class GestionarAulas extends JFrame {
     private JTextField textNumeroAula;
     private JTextField textCapacidad;
@@ -239,6 +244,11 @@ public class GestionarAulas extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al cancelar aula: " + ex.getMessage());
         }
     }
+    
+    /**
+     * Se muestra la interfaz por pantalla.
+     * @param args 
+     */
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

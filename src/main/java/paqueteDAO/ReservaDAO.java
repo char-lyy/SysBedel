@@ -219,6 +219,18 @@ public class ReservaDAO {
             return rowsInserted > 0;
         }
     }
+    /**
+     * Se guarda la reserva en base a los horarios establecidos, en caso de que no haya ningun conflicto
+     * @param codigoActividad
+     * @param aula
+     * @param horaInicio
+     * @param horaFin
+     * @param diaSemana
+     * @param fechaActividadDTO
+     * @param descripcion
+     * @return
+     * @throws SQLException 
+     */
 
     public boolean guardarReserva(int codigoActividad, String aula, TiempoDTO horaInicio, TiempoDTO horaFin, String diaSemana, FechaDTO fechaActividadDTO, String descripcion) throws SQLException {
 
@@ -315,6 +327,16 @@ public class ReservaDAO {
         }
         return false;
     }
+    /**
+     * Este metodo realiza la reserva en base a una fecha y horario determinado. 
+     * @param tipoReserva
+     * @param diaSeleccionado
+     * @param horaInicio
+     * @param horaFin
+     * @param reserva
+     * @return
+     * @throws SQLException 
+     */
 
     public boolean realizarReserva(String tipoReserva, String diaSeleccionado, TiempoDTO horaInicio, TiempoDTO horaFin, ReservaDTO reserva) throws SQLException {
         if (tipoReserva.equals("Anual") || tipoReserva.equals("Cuatrimestral")) {
@@ -395,8 +417,13 @@ public class ReservaDAO {
             insertarReserva(reserva);
         }
     }
-
-    // Método para calcular la próxima fecha de una reserva semanal
+    /**
+     * Método para calcular la próxima fecha de una reserva semanal
+     * @param fechaInicio
+     * @param diaSeleccionado
+     * @param diasIncremento
+     * @return 
+     */
     private Date calcularFechaProxima(Date fechaInicio, DayOfWeek diaSeleccionado, int diasIncremento) {
         LocalDate fecha = fechaInicio.toLocalDate().plusDays(diasIncremento);
         return Date.valueOf(fecha.with(TemporalAdjusters.nextOrSame(diaSeleccionado)));
@@ -420,6 +447,11 @@ public class ReservaDAO {
             insertarReserva(reserva);
         }
     }
+    
+    /**
+     * Este metodo obtiene la fecha de inicio del cuatrimestre
+     * @return verdadero si se pudo obtener la fecha.
+     */
 
     private Date obtenerFechaInicioCuatrimestre() {
         LocalDate hoy = LocalDate.now();
@@ -434,6 +466,15 @@ public class ReservaDAO {
             return Date.valueOf(inicioSegundoCuatrimestre);
         }
     }
+    /**
+     * Este metodo verfica si hay reservas que chocan. 
+     * @param fechaActividad
+     * @param horaInicio
+     * @param horaFin
+     * @param aula
+     * @return verdadero si hay reservas que chocan.
+     * @throws SQLException 
+     */
 
     public boolean hayReservaEnRango(Date fechaActividad, TiempoDTO horaInicio, TiempoDTO horaFin, String aula) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Reserva WHERE numeroAula = ? AND fechaActividad = ? "

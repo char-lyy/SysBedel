@@ -11,6 +11,12 @@ public class TiempoDTO implements Comparable {
 
     public TiempoDTO() {
     }
+    
+    /**
+     * Este metodo verifica que las horas sean validas.
+     * @param horas
+     * @param minutos 
+     */
 
     public TiempoDTO(int horas, int minutos) {
         if (horas < 0 || horas > 23 || minutos < 0 || minutos > 59) {
@@ -23,6 +29,10 @@ public class TiempoDTO implements Comparable {
     public int getHoras() {
         return horas;
     }
+    /**
+     * Se verifica que las horas sean validas.
+     * @param horas 
+     */
 
     public void setHoras(int horas) {
         if (horas < 0 || horas > 23) {
@@ -34,6 +44,10 @@ public class TiempoDTO implements Comparable {
     public int getMinutos() {
         return minutos;
     }
+    /**
+     * Se verifica que los minutos sean validos.
+     * @param minutos 
+     */
 
     public void setMinutos(int minutos) {
         if (minutos < 0 || minutos > 59) {
@@ -47,6 +61,11 @@ public class TiempoDTO implements Comparable {
         LocalTime localTime = LocalTime.of(horas, minutos);
         return localTime.toString();
     }
+    /**
+     * Este metodo valida las horas.
+     * @param o
+     * @return 0
+     */
 
     @Override
     public int compareTo(Object o) {
@@ -67,6 +86,11 @@ public class TiempoDTO implements Comparable {
         horas = cargarHoras();
         minutos = cargarMinutos();
     }
+    
+    /**
+     * Este metodo permite cargar las horas.
+     * @return verdadero si son validas las horas.
+     */
 
     private int cargarHoras() {
         int horasEntrantes;
@@ -79,6 +103,11 @@ public class TiempoDTO implements Comparable {
         } while (!esValido);
         return horasEntrantes;
     }
+    
+    /**
+     * Este metodo carga los minutos-
+     * @return verdadero si los minutos cargados son validos.
+     */
 
     private int cargarMinutos() {
         int minutosEntrantes;

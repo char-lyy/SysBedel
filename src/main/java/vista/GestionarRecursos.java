@@ -147,6 +147,10 @@ public class GestionarRecursos extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al consultar recursos: " + ex.getMessage());
         }
     }
+    /**
+     * Este metodo muestra la interfaz por pantalla.
+     * @param args 
+     */
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

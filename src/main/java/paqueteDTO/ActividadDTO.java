@@ -13,6 +13,11 @@ public class ActividadDTO {
 
     public enum DiaDeLaSemana {
         LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO, DOMINGO;
+        
+        /**
+         * Este metodo selecciona el dia de la semana
+         * @return el dia seleccionado
+         */
 
         public static DiaDeLaSemana seleccionarDiaDeLaSemana() {
             int opcion;
@@ -56,6 +61,10 @@ public class ActividadDTO {
             } while (true);
         }
     }
+    
+    /**
+     * Este metodo obtiene el periodo en el que se realizara la actividad.
+     */
 
     public enum PeriodoActividad {
         CUATRIMESTRAL,
@@ -88,7 +97,10 @@ public class ActividadDTO {
             } while (true);
         }
     }
-
+    
+    /**
+     * Este metodo obtiene el tipo de actividad a realizarse.
+     */
     public enum TipoActividad {
         CLASE,
         EVENTO;

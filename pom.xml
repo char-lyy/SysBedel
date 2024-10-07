@@ -33,6 +33,7 @@
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
             <version>1.7</version>
+            <type>jar</type>
         </dependency>
 
     </dependencies>
