@@ -30,6 +30,7 @@ CREATE TABLE Aula (
     ocupada BOOLEAN NOT NULL
 );
 
+
 CREATE TABLE Actividad (
     idActividad INT PRIMARY KEY,
     fechaInicioActividad DATE NOT NULL,
@@ -51,7 +52,7 @@ CREATE TABLE Reserva (
     FOREIGN KEY (numeroAula) REFERENCES Aula(numeroAula)
 );
 CREATE TABLE Clase (
-    idActividad INT PRIMARY KEY,
+    idActividad INT,
     legajoDocente VARCHAR(50) NOT NULL,
     asignatura VARCHAR(100) NOT NULL,
     PRIMARY KEY (idActividad, legajoDocente),
@@ -59,8 +60,9 @@ CREATE TABLE Clase (
     FOREIGN KEY (legajoDocente) REFERENCES Docente(legajoDocente)
 );
 
+
 CREATE TABLE Evento (
-    idActividad INT PRIMARY KEY,
+    idActividad INT,
     responsableEvento VARCHAR(100) NOT NULL,
     descripcionEvento VARCHAR(255) NOT NULL,
     nroNotaEvento VARCHAR(50) NOT NULL,
@@ -69,21 +71,27 @@ CREATE TABLE Evento (
 );
 
 CREATE TABLE Recurso (
-    codigoRecurso VARCHAR(50) PRIMARY KEY NOT NULL,
+    codigoRecurso INT AUTO_INCREMENT PRIMARY KEY,
     descripcionRecurso VARCHAR(255) NOT NULL,
     cantidadRecurso INT NOT NULL
 );
 
+CREATE TABLE informe (
+    numero_aula INT NOT NULL,
+    descripcion VARCHAR(255) NOT NULL,
+    PRIMARY KEY (numero_aula, descripcion)
+);
+
 CREATE TABLE Prestamo (
     legajoDocente VARCHAR(50) NOT NULL,
-    codigoRecurso VARCHAR(50) NOT NULL,
+    codigoRecurso INT NOT NULL,
     estaPrestado BOOLEAN NOT NULL,
     fechaPrestamo DATE NOT NULL,
-    horaPrestamo DATE NOT NULL,
+    horaPrestamo TIME NOT NULL,
     observacionPrestamo VARCHAR(255),
     PRIMARY KEY (legajoDocente, codigoRecurso),
     FOREIGN KEY (legajoDocente) REFERENCES Docente(legajoDocente),
-    FOREIGN KEY (codigoRecurso) REFERENCES Recurso(codigoRecurso)
+    FOREIGN KEY (codigoRecurso) REFERENCES Recurso(codigoRecurso)  -- Sin AUTO_INCREMENT aquí
 );
 
 CREATE TABLE Observacion (
@@ -94,6 +102,9 @@ CREATE TABLE Observacion (
     horaObservacion TIME NOT NULL,
     FOREIGN KEY (numeroAula) REFERENCES Aula(numeroAula)
 );
+
+ALTER TABLE reserva ADD COLUMN descripcion VARCHAR(255);
+ALTER TABLE Reserva MODIFY idReserva INT AUTO_INCREMENT;
 
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (20, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (21, 30, FALSE);
@@ -107,5 +118,8 @@ INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (28, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (29, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (30, 30, FALSE);
 
-INSERT INTO Reserva(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad) VALUES (1, 1, 24, 1, '8:00:00', '10:00:00', 2024-09-23, 2024-09-23);
-INSERT INTO Reserva(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad) VALUES (2, 1, 24, 1, '8:00:00', '10:00:00', 2024-09-23, 2024-09-23);
+INSERT INTO Actividad (idActividad, fechaInicioActividad, fechaFinActividad, periodoActividad, tipoActividad)
+VALUES (1, '2024-09-23', '2024-09-23', 'Matutino', 'Clase');
+
+INSERT INTO Reserva(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad) VALUES (1, 1, 24, 1, '8:00:00', '10:00:00', '2024-09-23', '2024-09-23');
+INSERT INTO Reserva(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad) VALUES (2, 1, 24, 1, '8:00:00', '10:00:00', '2024-09-23', '2024-09-23');
