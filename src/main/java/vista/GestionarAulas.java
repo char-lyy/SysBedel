@@ -151,7 +151,7 @@ public class GestionarAulas extends JFrame {
             boolean ocupada = checkBoxOcupada.isSelected();
 
             AulaDTO aula = new AulaDTO(nroAula, capacidad, ocupada);
-            String query = "INSERT INTO aulas (numero_aula, capacidad, ocupada) VALUES (?, ?, ?)";
+            String query = "INSERT INTO aula (numeroAula, capacidadAula, ocupada) VALUES (?, ?, ?)";
 
             try (Connection connection = ConnectionManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement(query)) {
@@ -174,24 +174,25 @@ public class GestionarAulas extends JFrame {
      */
 
     private void cargarAulas() {
-        tableModel.setRowCount(0);  // Limpiar la tabla
-        String query = "SELECT numero_aula, capacidad, ocupada FROM aulas";
+    tableModel.setRowCount(0);  // Limpiar la tabla
+    String query = "SELECT numeroAula, capacidadAula, ocupada FROM Aula";
 
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
+    try (Connection connection = ConnectionManager.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query);
+         ResultSet resultSet = statement.executeQuery()) {
 
-            while (resultSet.next()) {
-                int nroAula = resultSet.getInt("numero_aula");
-                int capacidad = resultSet.getInt("capacidad");
-                boolean ocupada = resultSet.getBoolean("ocupada");
+        while (resultSet.next()) {
+            int nroAula = resultSet.getInt("numeroAula");
+            int capacidad = resultSet.getInt("capacidadAula");
+            boolean ocupada = resultSet.getBoolean("ocupada");
 
-                tableModel.addRow(new Object[]{nroAula, capacidad, ocupada});
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar aulas: " + ex.getMessage());
+            tableModel.addRow(new Object[]{nroAula, capacidad, ocupada});
         }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Error al cargar aulas: " + ex.getMessage());
     }
+}
+
     
     /**
      * Método para modificar una aula seleccionada
@@ -203,7 +204,7 @@ public class GestionarAulas extends JFrame {
             int capacidad = Integer.parseInt(textCapacidad.getText());
             boolean ocupada = checkBoxOcupada.isSelected();
 
-            String query = "UPDATE aulas SET capacidad = ?, ocupada = ? WHERE numero_aula = ?";
+            String query = "UPDATE aula SET capacidadAula = ?, ocupada = ? WHERE numeroAula = ?";
 
             try (Connection connection = ConnectionManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement(query)) {
@@ -229,7 +230,7 @@ public class GestionarAulas extends JFrame {
         try {
             int nroAula = Integer.parseInt(textNumeroAula.getText());
 
-            String query = "DELETE FROM aulas WHERE numero_aula = ?";
+            String query = "DELETE FROM aula WHERE numeroAula = ?";
 
             try (Connection connection = ConnectionManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement(query)) {

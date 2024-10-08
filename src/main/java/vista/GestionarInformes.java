@@ -19,7 +19,6 @@ public class GestionarInformes extends JFrame {
     /**
      * Constructor que configura la interfaz de la clase.
      */
-
     public GestionarInformes() {
         setTitle("Gestionar Informes");
         setSize(600, 400);
@@ -106,9 +105,8 @@ public class GestionarInformes extends JFrame {
      * @param nroAula
      * @param descripcion 
      */
-
     private void generarInforme(int nroAula, String descripcion) {
-        String query = "INSERT INTO informes (numero_aula, descripcion) VALUES (?, ?)";
+        String query = "INSERT INTO informe (numero_aula, descripcion) VALUES (?, ?)";
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -125,9 +123,8 @@ public class GestionarInformes extends JFrame {
     /**
      * Método para cargar los informes de la base de datos en la tabla
      */
-
     private void cargarInformes() {
-        String query = "SELECT numero_aula, descripcion FROM informes";
+        String query = "SELECT numero_aula, descripcion FROM informe";
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
@@ -145,11 +142,11 @@ public class GestionarInformes extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar los informes: " + ex.getMessage());
         }
     }
+
     /**
      * Este metodo muestra la interfaz por pantalla.
      * @param args 
      */
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             GestionarInformes frame = new GestionarInformes();

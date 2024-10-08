@@ -13,11 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class GestionarRecursos extends JFrame {
-    
+
     /**
      * Constructor que configura la interfaz de la clase.
      */
-
     public GestionarRecursos() {
         setTitle("Gestionar Recursos");
         setSize(400, 300);
@@ -102,14 +101,13 @@ public class GestionarRecursos extends JFrame {
         // Añadir el panel principal a la ventana
         add(mainPanel);
     }
-    
+
     /**
      * Método para registrar recurso en la base de datos
-     * @param recurso 
+     * @param recurso
      */
-
     private void registrarRecurso(RecursoDTO recurso) {
-        String query = "INSERT INTO recursos (descripcion_recurso, cantidad_recurso) VALUES (?, ?)";
+        String query = "INSERT INTO recurso (descripcionRecurso, cantidadRecurso) VALUES (?, ?)";
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -122,22 +120,22 @@ public class GestionarRecursos extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al registrar recurso: " + ex.getMessage());
         }
     }
-    
+
     /**
      * Método para consultar los recursos en la base de datos
      */
     private void consultarRecursos() {
-        String query = "SELECT codigo_recurso, descripcion_recurso, cantidad_recurso FROM recursos";
+        String query = "SELECT codigoRecurso, descripcionRecurso, cantidadRecurso FROM recurso"; // Asegúrate que el nombre de la tabla sea correcto
         try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
-            ResultSet resultSet = statement.executeQuery();
             StringBuilder recursos = new StringBuilder("Recursos Registrados:\n\n");
 
             while (resultSet.next()) {
-                int codigo = resultSet.getInt("codigo_recurso");
-                String descripcion = resultSet.getString("descripcion_recurso");
-                int cantidad = resultSet.getInt("cantidad_recurso");
+                int codigo = resultSet.getInt("codigoRecurso");
+                String descripcion = resultSet.getString("descripcionRecurso");
+                int cantidad = resultSet.getInt("cantidadRecurso");
                 recursos.append("Código: ").append(codigo).append(", Descripción: ").append(descripcion)
                         .append(", Cantidad: ").append(cantidad).append("\n");
             }
@@ -147,11 +145,11 @@ public class GestionarRecursos extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al consultar recursos: " + ex.getMessage());
         }
     }
-    /**
-     * Este metodo muestra la interfaz por pantalla.
-     * @param args 
-     */
 
+    /**
+     * Este método muestra la interfaz por pantalla.
+     * @param args
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             GestionarRecursos frame = new GestionarRecursos();

@@ -52,6 +52,10 @@ public class ReservaDTO {
         this.diaActividadPeriodica = diaSemana;
         this.descripcion = descripcion;
     }
+
+    public ReservaDTO() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
     public int getIdReserva() {
         return idReserva;
