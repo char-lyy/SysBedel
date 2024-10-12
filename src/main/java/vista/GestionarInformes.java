@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import principal.ConnectionManager;
 
 public class GestionarInformes extends JFrame {
@@ -20,8 +22,8 @@ public class GestionarInformes extends JFrame {
      * Constructor que configura la interfaz de la clase.
      */
     public GestionarInformes() {
-        setTitle("Gestionar Informes");
-        setSize(600, 400);
+        setTitle("Gestionar Informes de Novedades");
+        setSize(700, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -45,9 +47,19 @@ public class GestionarInformes extends JFrame {
         gbc.gridx = 1;
         centralPanel.add(textAula, gbc);
 
-        // Etiqueta y área de texto para la descripción del problema
+        // Etiqueta y campo de texto para el responsable
         gbc.gridx = 0;
         gbc.gridy = 1;
+        JLabel labelResponsable = new JLabel("Responsable:");
+        JTextField textResponsable = new JTextField(15);
+        centralPanel.add(labelResponsable, gbc);
+
+        gbc.gridx = 1;
+        centralPanel.add(textResponsable, gbc);
+
+        // Etiqueta y área de texto para la descripción del problema
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         JLabel labelDescripcion = new JLabel("Descripción del Problema:");
         centralPanel.add(labelDescripcion, gbc);
 
@@ -58,14 +70,14 @@ public class GestionarInformes extends JFrame {
 
         // Botón para generar el informe
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         JButton buttonGenerar = new JButton("Generar Informe");
         centralPanel.add(buttonGenerar, gbc);
 
         // Tabla para mostrar los informes registrados
-        tableModel = new DefaultTableModel(new Object[]{"Número de Aula", "Descripción"}, 0);
+        tableModel = new DefaultTableModel(new Object[]{"Número de Aula", "Descripción", "Responsable", "Fecha", "Hora"}, 0);
         tableInformes = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(tableInformes);
 
@@ -76,12 +88,13 @@ public class GestionarInformes extends JFrame {
                 try {
                     int nroAula = Integer.parseInt(textAula.getText());
                     String descripcion = textDescripcion.getText();
+                    String responsable = textResponsable.getText();
 
-                    if (!descripcion.isEmpty() && nroAula > 0) {
-                        generarInforme(nroAula, descripcion);
+                    if (nroAula >= 20 && nroAula <= 31 && !descripcion.isEmpty() && !responsable.isEmpty()) {
+                        generarInforme(nroAula, descripcion, responsable);
                         cargarInformes(); // Refrescar la tabla después de generar un informe
                     } else {
-                        JOptionPane.showMessageDialog(null, "Por favor, ingresa valores válidos.");
+                        JOptionPane.showMessageDialog(null, "Por favor, ingresa valores válidos (número de aula entre 20 y 31, y campos no vacíos).");
                     }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Por favor, ingresa un número de aula válido.");
@@ -103,15 +116,25 @@ public class GestionarInformes extends JFrame {
     /**
      * Método para generar un informe en la base de datos
      * @param nroAula
-     * @param descripcion 
+     * @param descripcion
+     * @param responsable 
      */
-    private void generarInforme(int nroAula, String descripcion) {
-        String query = "INSERT INTO informe (numero_aula, descripcion) VALUES (?, ?)";
+    private void generarInforme(int nroAula, String descripcion, String responsable) {
+        String query = "INSERT INTO informe (numero_aula, descripcion, responsable, fecha, hora) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, nroAula);
             statement.setString(2, descripcion);
+            statement.setString(3, responsable);
+
+            // Obtener la fecha y la hora actual
+            LocalDateTime now = LocalDateTime.now();
+            String fecha = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String hora = now.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            statement.setString(4, fecha);
+            statement.setString(5, hora);
+
             statement.executeUpdate();
 
             JOptionPane.showMessageDialog(this, "Informe generado exitosamente.");
@@ -124,7 +147,7 @@ public class GestionarInformes extends JFrame {
      * Método para cargar los informes de la base de datos en la tabla
      */
     private void cargarInformes() {
-        String query = "SELECT numero_aula, descripcion FROM informe";
+        String query = "SELECT numero_aula, descripcion, responsable, fecha, hora FROM informe";
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
@@ -136,7 +159,10 @@ public class GestionarInformes extends JFrame {
             while (resultSet.next()) {
                 int numeroAula = resultSet.getInt("numero_aula");
                 String descripcion = resultSet.getString("descripcion");
-                tableModel.addRow(new Object[]{numeroAula, descripcion});
+                String responsable = resultSet.getString("responsable");
+                String fecha = resultSet.getString("fecha");
+                String hora = resultSet.getString("hora");
+                tableModel.addRow(new Object[]{numeroAula, descripcion, responsable, fecha, hora});
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar los informes: " + ex.getMessage());
