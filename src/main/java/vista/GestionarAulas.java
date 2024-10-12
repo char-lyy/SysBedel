@@ -1,7 +1,7 @@
 package vista;
 
+import paqueteDAO.AulaDAO;
 import paqueteDTO.AulaDTO;
-import principal.ConnectionManager;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -10,27 +10,23 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
-
-/**
- * Este metodo configura la vista de Aulas.
- * @author NETBOOK
- */
 
 public class GestionarAulas extends JFrame {
     private JTextField textNumeroAula;
     private JTextField textCapacidad;
     private JCheckBox checkBoxOcupada;
+    private JTextField textObservaciones; // Campo para observaciones
+    private JTextField textResponsable; // Campo para responsable
+    private JTextField textFecha; // Campo para fecha
+    private JTextField textHora; // Campo para hora
     private JTable tableAulas;
     private DefaultTableModel tableModel;
-    
-    /**
-     * Constructor que configura la interfaz de la clase.
-     */
+    private AulaDAO aulaDAO;
 
     public GestionarAulas() {
+        aulaDAO = new AulaDAO(); // Inicializar el AulaDAO
         setTitle("Gestionar Aulas");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,9 +70,49 @@ public class GestionarAulas extends JFrame {
         checkBoxOcupada = new JCheckBox("¿Está ocupada?");
         centralPanel.add(checkBoxOcupada, gbc);
 
-        // Botón para registrar el aula
+        // Campo para observaciones
         gbc.gridx = 0;
         gbc.gridy = 3;
+        JLabel labelObservaciones = new JLabel("Observaciones:");
+        centralPanel.add(labelObservaciones, gbc);
+
+        gbc.gridx = 1;
+        textObservaciones = new JTextField(20);
+        centralPanel.add(textObservaciones, gbc);
+
+        // Campo para responsable
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        JLabel labelResponsable = new JLabel("Responsable:");
+        centralPanel.add(labelResponsable, gbc);
+
+        gbc.gridx = 1;
+        textResponsable = new JTextField(20);
+        centralPanel.add(textResponsable, gbc);
+
+        // Campo para fecha
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        JLabel labelFecha = new JLabel("Fecha (dd/MM/yyyy):");
+        centralPanel.add(labelFecha, gbc);
+
+        gbc.gridx = 1;
+        textFecha = new JTextField(20);
+        centralPanel.add(textFecha, gbc);
+
+        // Campo para hora
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        JLabel labelHora = new JLabel("Hora (HH:mm):");
+        centralPanel.add(labelHora, gbc);
+
+        gbc.gridx = 1;
+        textHora = new JTextField(20);
+        centralPanel.add(textHora, gbc);
+
+        // Botón para registrar el aula
+        gbc.gridx = 0;
+        gbc.gridy = 7;
         gbc.gridwidth = 2;
         JButton buttonRegistrar = new JButton("Registrar Aula");
         centralPanel.add(buttonRegistrar, gbc);
@@ -90,7 +126,7 @@ public class GestionarAulas extends JFrame {
         });
 
         // Tabla para mostrar las aulas
-        tableModel = new DefaultTableModel(new String[]{"Número de Aula", "Capacidad", "Ocupada"}, 0);
+        tableModel = new DefaultTableModel(new String[]{"Número de Aula", "Capacidad", "Ocupada", "Observaciones", "Responsable", "Fecha", "Hora"}, 0);
         tableAulas = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(tableAulas);
 
@@ -103,30 +139,24 @@ public class GestionarAulas extends JFrame {
                     textNumeroAula.setText(tableModel.getValueAt(selectedRow, 0).toString());
                     textCapacidad.setText(tableModel.getValueAt(selectedRow, 1).toString());
                     checkBoxOcupada.setSelected((Boolean) tableModel.getValueAt(selectedRow, 2));
+                    textObservaciones.setText(tableModel.getValueAt(selectedRow, 3).toString());
+                    textResponsable.setText(tableModel.getValueAt(selectedRow, 4).toString());
+                    textFecha.setText(tableModel.getValueAt(selectedRow, 5).toString());
+                    textHora.setText(tableModel.getValueAt(selectedRow, 6).toString());
                 }
             }
         });
 
-        // Panel para botones de modificar y cancelar
+        // Panel para botón de modificar
         JPanel buttonPanel = new JPanel();
         JButton buttonModificar = new JButton("Modificar Aula");
-        JButton buttonCancelar = new JButton("Cancelar Aula");
         buttonPanel.add(buttonModificar);
-        buttonPanel.add(buttonCancelar);
 
         // Acción para modificar una aula seleccionada
         buttonModificar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 modificarAula();
-            }
-        });
-
-        // Acción para cancelar una aula seleccionada
-        buttonCancelar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cancelarAula();
             }
         });
 
@@ -140,121 +170,110 @@ public class GestionarAulas extends JFrame {
         // Cargar las aulas reservadas en la tabla
         cargarAulas();
     }
-    
-    /**
-     * Método para registrar aula en la base de datos
-     */
+
     private void registrarAula() {
-        try {
-            int nroAula = Integer.parseInt(textNumeroAula.getText());
-            int capacidad = Integer.parseInt(textCapacidad.getText());
-            boolean ocupada = checkBoxOcupada.isSelected();
+    try {
+        int nroAula = Integer.parseInt(textNumeroAula.getText());
+        int capacidad = Integer.parseInt(textCapacidad.getText());
+        boolean ocupada = checkBoxOcupada.isSelected();
+        String ocupacionTexto = ocupada ? "Sí" : "No";
+        String observaciones = textObservaciones.getText().trim();
+        String responsable = textResponsable.getText().trim();
+        String fecha = textFecha.getText().trim();
+        String hora = textHora.getText().trim();
 
-            AulaDTO aula = new AulaDTO(nroAula, capacidad, ocupada);
-            String query = "INSERT INTO aula (numeroAula, capacidadAula, ocupada) VALUES (?, ?, ?)";
-
-            try (Connection connection = ConnectionManager.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(query)) {
-
-                statement.setInt(1, aula.getNroAula());
-                statement.setInt(2, aula.getCapacidad());
-                statement.setBoolean(3, aula.isOcupada());
-                statement.executeUpdate();
-
-                JOptionPane.showMessageDialog(this, "Aula registrada exitosamente.");
-                cargarAulas();  // Refrescar la tabla
-            }
-        } catch (SQLException | NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error al registrar aula: " + ex.getMessage());
+        // Verificar si el aula está en el rango permitido
+        if (nroAula < 20 || nroAula > 31) {
+            JOptionPane.showMessageDialog(this, "El aula debe estar en el rango entre 20 y 31.");
+            return; // Salir del método
         }
-    }
-    
-    /**
-     * Método para cargar las aulas desde la base de datos
-     */
 
-    private void cargarAulas() {
-    tableModel.setRowCount(0);  // Limpiar la tabla
-    String query = "SELECT numeroAula, capacidadAula, ocupada FROM Aula";
-
-    try (Connection connection = ConnectionManager.getConnection();
-         PreparedStatement statement = connection.prepareStatement(query);
-         ResultSet resultSet = statement.executeQuery()) {
-
-        while (resultSet.next()) {
-            int nroAula = resultSet.getInt("numeroAula");
-            int capacidad = resultSet.getInt("capacidadAula");
-            boolean ocupada = resultSet.getBoolean("ocupada");
-
-            tableModel.addRow(new Object[]{nroAula, capacidad, ocupada});
+        // Verificar si hay observaciones y se intenta marcar el aula como ocupada
+        if (!observaciones.isEmpty() && ocupada) {
+            JOptionPane.showMessageDialog(this, "No se puede ocupar el aula si tiene observaciones.");
+            return; // Salir del método
         }
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error al cargar aulas: " + ex.getMessage());
+
+        AulaDTO nuevaAula = new AulaDTO(nroAula, capacidad, ocupada, observaciones, responsable, fecha, hora);
+        aulaDAO.registrarAula(nuevaAula);
+        tableModel.addRow(new Object[]{nroAula, capacidad, ocupacionTexto, observaciones, responsable, fecha, hora});
+        limpiarCampos();
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Por favor, ingrese valores válidos.");
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error al registrar el aula: " + e.getMessage());
     }
 }
 
-    
-    /**
-     * Método para modificar una aula seleccionada
-     */
-
-    private void modificarAula() {
+private void modificarAula() {
+    int selectedRow = tableAulas.getSelectedRow();
+    if (selectedRow != -1) {
         try {
             int nroAula = Integer.parseInt(textNumeroAula.getText());
             int capacidad = Integer.parseInt(textCapacidad.getText());
             boolean ocupada = checkBoxOcupada.isSelected();
+            String ocupacionTexto = ocupada ? "Sí" : "No";
+            String observaciones = textObservaciones.getText().trim();
+            String responsable = textResponsable.getText().trim();
+            String fecha = textFecha.getText().trim();
+            String hora = textHora.getText().trim();
 
-            String query = "UPDATE aula SET capacidadAula = ?, ocupada = ? WHERE numeroAula = ?";
-
-            try (Connection connection = ConnectionManager.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(query)) {
-
-                statement.setInt(1, capacidad);
-                statement.setBoolean(2, ocupada);
-                statement.setInt(3, nroAula);
-                statement.executeUpdate();
-
-                JOptionPane.showMessageDialog(this, "Aula modificada exitosamente.");
-                cargarAulas();  // Refrescar la tabla
+            // Verificar si el aula está en el rango permitido
+            if (nroAula < 20 || nroAula > 31) {
+                JOptionPane.showMessageDialog(this, "El aula debe estar en el rango entre 20 y 31.");
+                return; // Salir del método
             }
-        } catch (SQLException | NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error al modificar aula: " + ex.getMessage());
+
+            // Verificar si hay observaciones y se intenta marcar el aula como ocupada
+            if (!observaciones.isEmpty() && ocupada) {
+                JOptionPane.showMessageDialog(this, "No se puede ocupar el aula si tiene observaciones.");
+                return; // Salir del método
+            }
+
+            AulaDTO aulaModificada = new AulaDTO(nroAula, capacidad, ocupada, observaciones, responsable, fecha, hora);
+            aulaDAO.modificarAula(aulaModificada);
+            tableModel.setValueAt(nroAula, selectedRow, 0);
+            tableModel.setValueAt(capacidad, selectedRow, 1);
+            tableModel.setValueAt(ocupacionTexto, selectedRow, 2);
+            tableModel.setValueAt(observaciones, selectedRow, 3);
+            tableModel.setValueAt(responsable, selectedRow, 4);
+            tableModel.setValueAt(fecha, selectedRow, 5);
+            tableModel.setValueAt(hora, selectedRow, 6);
+            limpiarCampos();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese valores válidos.");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al modificar el aula: " + e.getMessage());
         }
     }
-    
-    /**
-     * Método para cancelar una aula seleccionada
-     */
+}
 
-    private void cancelarAula() {
+
+    private void cargarAulas() {
         try {
-            int nroAula = Integer.parseInt(textNumeroAula.getText());
-
-            String query = "DELETE FROM aula WHERE numeroAula = ?";
-
-            try (Connection connection = ConnectionManager.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(query)) {
-
-                statement.setInt(1, nroAula);
-                statement.executeUpdate();
-
-                JOptionPane.showMessageDialog(this, "Aula cancelada exitosamente.");
-                cargarAulas();  // Refrescar la tabla
+            List<AulaDTO> aulas = aulaDAO.obtenerAulas();
+            for (AulaDTO aula : aulas) {
+                tableModel.addRow(new Object[]{aula.getNroAula(), aula.getCapacidad(), aula.isOcupada(), aula.getObservaciones(), aula.getResponsable(), aula.getFecha(), aula.getHora()});
             }
-        } catch (SQLException | NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cancelar aula: " + ex.getMessage());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar las aulas: " + e.getMessage());
         }
     }
-    
-    /**
-     * Se muestra la interfaz por pantalla.
-     * @param args 
-     */
+
+    private void limpiarCampos() {
+        textNumeroAula.setText("");
+        textCapacidad.setText("");
+        checkBoxOcupada.setSelected(false);
+        textObservaciones.setText("");
+        textResponsable.setText("");
+        textFecha.setText("");
+        textHora.setText("");
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            GestionarAulas frame = new GestionarAulas();
-            frame.setVisible(true);
+            GestionarAulas ventana = new GestionarAulas();
+            ventana.setVisible(true);
         });
     }
 }

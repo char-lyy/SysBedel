@@ -15,15 +15,31 @@ public class ReservaDTO {
     private FechaDTO fechaActividad;
     private DayOfWeek diaActividadPeriodica;
     private String descripcion;
-    
-    public ReservaDTO(int idActividad, int numeroAula, TiempoDTO horaInicio, TiempoDTO horaFin, FechaDTO fechaActividad, String descripcion) {
+    private String responsable;
+
+    public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, TiempoDTO horaInicio, TiempoDTO horaFin, FechaDTO fechaReserva, FechaDTO fechaActividad, DayOfWeek diaActividadPeriodica, String descripcion, String responsable) {
+        this.idReserva = idReserva;
         this.idActividad = idActividad;
         this.numeroAula = numeroAula;
+        this.confirmada = confirmada;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
+        this.fechaReserva = fechaReserva;
         this.fechaActividad = fechaActividad;
+        this.diaActividadPeriodica = diaActividadPeriodica;
         this.descripcion = descripcion;
+        this.responsable = responsable;
     }
+
+    public String getResponsable() {
+        return responsable;
+    }
+
+    public void setResponsable(String responsable) {
+        this.responsable = responsable;
+    }
+    
+
     
     
     public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, TiempoDTO horaInicio, TiempoDTO horaFin, FechaDTO fechaReserva, FechaDTO fechaActividad, String descripcion) {

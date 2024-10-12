@@ -1,121 +1,81 @@
 package paqueteDAO;
 
 import paqueteDTO.AulaDTO;
+import principal.ConnectionManager;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AulaDAO {
 
-    private Connection connection;
-    /**
-     * Constructor de la clase que permite la conexion con la Base de Datos.
-     * @param connection 
-     */
+    // Método para registrar un aula en la base de datos
+    public void registrarAula(AulaDTO aula) throws SQLException {
+        String query = "INSERT INTO aula (numeroAula, capacidadAula, ocupada, observaciones, responsable, fecha, hora) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
-    public AulaDAO(Connection connection) {
-        this.connection = connection;
-    }
-    /**
-     * Método para agregar una nueva aula
-     * @param aula
-     * @throws SQLException 
-     */
-
-
-    public void agregarAula(AulaDTO aula) throws SQLException {
-        String sql = "INSERT INTO Aula (nroAula, capacidad, ocupada) VALUES (?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, aula.getNroAula());
             statement.setInt(2, aula.getCapacidad());
             statement.setBoolean(3, aula.isOcupada());
+            statement.setString(4, aula.getObservaciones());
+            statement.setString(5, aula.getResponsable()); // Nuevo atributo
+            statement.setString(6, aula.getFecha()); // Nuevo atributo
+            statement.setString(7, aula.getHora()); // Nuevo atributo
             statement.executeUpdate();
         }
     }
-    
-    /**
-     * Método para obtener todas las aulas
-     * @return las aulas.
-     * @throws SQLException 
-     */
 
+    // Método para modificar un aula en la base de datos
+    public void modificarAula(AulaDTO aula) throws SQLException {
+        String query = "UPDATE aula SET capacidadAula = ?, ocupada = ?, observaciones = ?, responsable = ?, fecha = ?, hora = ? WHERE numeroAula = ?";
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
-    public List<AulaDTO> obtenerTodasLasAulas() throws SQLException {
+            statement.setInt(1, aula.getCapacidad());
+            statement.setBoolean(2, aula.isOcupada());
+            statement.setString(3, aula.getObservaciones());
+            statement.setString(4, aula.getResponsable()); // Nuevo atributo
+            statement.setString(5, aula.getFecha()); // Nuevo atributo
+            statement.setString(6, aula.getHora()); // Nuevo atributo
+            statement.setInt(7, aula.getNroAula());
+            statement.executeUpdate();
+        }
+    }
+
+    // Método para cancelar un aula en la base de datos
+    public void cancelarAula(int numeroAula) throws SQLException {
+        String query = "DELETE FROM aula WHERE numeroAula = ?";
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, numeroAula);
+            statement.executeUpdate();
+        }
+    }
+
+    // Método para obtener una lista de aulas de la base de datos
+    public List<AulaDTO> obtenerAulas() throws SQLException {
         List<AulaDTO> aulas = new ArrayList<>();
-        String sql = "SELECT * FROM Aula";
-
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
+        String query = "SELECT numeroAula, capacidadAula, ocupada, observaciones, responsable, fecha, hora FROM aula"; // Actualizado para incluir nuevos atributos
+        
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                int nroAula = resultSet.getInt("nroAula");
-                int capacidad = resultSet.getInt("capacidad");
+                int nroAula = resultSet.getInt("numeroAula");
+                int capacidad = resultSet.getInt("capacidadAula");
                 boolean ocupada = resultSet.getBoolean("ocupada");
-                aulas.add(new AulaDTO(nroAula, capacidad, ocupada));
+                String observaciones = resultSet.getString("observaciones");
+                String responsable = resultSet.getString("responsable"); // Nuevo atributo
+                String fecha = resultSet.getString("fecha"); // Nuevo atributo
+                String hora = resultSet.getString("hora"); // Nuevo atributo
+
+                AulaDTO aula = new AulaDTO(nroAula, capacidad, ocupada, observaciones, responsable, fecha, hora);
+                aulas.add(aula);
             }
         }
-
         return aulas;
-    }
-    /**
-     * Método para obtener aulas no ocupadas.
-     * @return las aulas no ocupadas.
-     * @throws SQLException 
-     */
-
-    public List<AulaDTO> obtenerAulasNoOcupadas() throws SQLException {
-        List<AulaDTO> aulasNoOcupadas = new ArrayList<>();
-        String sql = "SELECT * FROM Aula WHERE ocupada = false";
-
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-
-            while (resultSet.next()) {
-                int nroAula = resultSet.getInt("nroAula");
-                int capacidad = resultSet.getInt("capacidad");
-                aulasNoOcupadas.add(new AulaDTO(nroAula, capacidad, false));
-            }
-        }
-
-        return aulasNoOcupadas;
-    }
-    
-    /**
-     * Método para obtener aulas ocupadas
-     * @return las aulas ocupadas
-     * @throws SQLException 
-     */
-
-    public List<AulaDTO> obtenerAulasOcupadas() throws SQLException {
-        List<AulaDTO> aulasOcupadas = new ArrayList<>();
-        String sql = "SELECT * FROM Aula WHERE ocupada = true";
-
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-
-            while (resultSet.next()) {
-                int nroAula = resultSet.getInt("nroAula");
-                int capacidad = resultSet.getInt("capacidad");
-                aulasOcupadas.add(new AulaDTO(nroAula, capacidad, true));
-            }
-        }
-
-        return aulasOcupadas;
-    }
-    
-    /**
-     * Método para actualizar el estado de ocupación de un aula.
-     * @param nroAula
-     * @param ocupada
-     * @throws SQLException 
-     */
-
-    public void actualizarOcupacion(int nroAula, boolean ocupada) throws SQLException {
-        String sql = "UPDATE Aula SET ocupada = ? WHERE nroAula = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setBoolean(1, ocupada);
-            statement.setInt(2, nroAula);
-            statement.executeUpdate();
-        }
     }
 }

@@ -235,36 +235,44 @@ public class ReservaDAO {
      * @throws SQLException
      */
 
-    public boolean guardarReserva(int codigoActividad, String aula, TiempoDTO horaInicio, TiempoDTO horaFin, String diaSemana, FechaDTO fechaActividadDTO, String descripcion) throws SQLException {
+    public boolean guardarReserva(int codigoActividad, String aula, TiempoDTO horaInicio, TiempoDTO horaFin, String diaSemana, FechaDTO fechaActividadDTO, String descripcion, String responsable) throws SQLException {
 
+        // Verificar si hay un conflicto de horario antes de proceder
         if (hayReservaEnRango(fechaActividadDTO.toSqlDate(), horaInicio, horaFin, aula)) {
             System.out.println("Conflicto de horario: la reserva no se puede realizar.");
             return false; // Salir del método si hay un conflicto
         }
-        String sql = "INSERT INTO Reserva (idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+        // Consulta SQL para insertar la reserva
+        String sql = "INSERT INTO Reserva (idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad, descripcion, responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        // Fecha de la reserva (fecha actual)
         Date fechaReserva = new Date(System.currentTimeMillis());
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, 1);
-            preparedStatement.setInt(2, Integer.parseInt(aula));
-            preparedStatement.setBoolean(3, false);
+            // Configuración de parámetros para la consulta
+            preparedStatement.setInt(1, codigoActividad); // Identificador de la actividad
+            preparedStatement.setInt(2, Integer.parseInt(aula)); // Número de aula como entero
+            preparedStatement.setBoolean(3, false); // La reserva no está confirmada inicialmente
 
+            // Establecer las horas de inicio y fin de la reserva
             preparedStatement.setTime(4, java.sql.Time.valueOf(horaInicio.getHoras() + ":" + horaInicio.getMinutos() + ":00"));
-
             preparedStatement.setTime(5, java.sql.Time.valueOf(horaFin.getHoras() + ":" + horaFin.getMinutos() + ":00"));
 
+            // Establecer la fecha de la reserva (fecha actual) y la fecha de la actividad
             preparedStatement.setDate(6, fechaReserva);
-
             preparedStatement.setDate(7, fechaActividadDTO.toSqlDate());
 
+            // Descripción y responsable de la reserva
             preparedStatement.setString(8, descripcion);
+            preparedStatement.setString(9, responsable);
 
+            // Ejecutar la actualización en la base de datos
             preparedStatement.executeUpdate();
-
-            return true;
+            return true; // Retornar verdadero si la inserción fue exitosa
         }
     }
+
 
     /**
      * Método para verificar si una aula existe en la base de datos

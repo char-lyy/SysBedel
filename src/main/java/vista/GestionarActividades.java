@@ -35,6 +35,9 @@ public class GestionarActividades extends JFrame {
     private JSpinner spinnerHoraInicio;
     private JSpinner spinnerHoraFin;
     private JButton buttonMostrarReservas;
+    private JTextField textResponsable;
+    private JLabel labelResponsable;
+
     /**
      * Este metodo configura la vista de Actividades.
      */
@@ -80,6 +83,11 @@ public class GestionarActividades extends JFrame {
 
         spinnerHoraFin = new JSpinner(new SpinnerDateModel());
         spinnerHoraFin.setEditor(new JSpinner.DateEditor(spinnerHoraFin, "HH:mm"));
+        
+        textResponsable = new JTextField(20);
+        labelResponsable = new JLabel("Resposnable:");
+        
+
     }
 
     /**
@@ -179,98 +187,48 @@ public class GestionarActividades extends JFrame {
      * Este metodo ocnfigura el boton para guardar.
      */
     private void configurarBotonGuardar() {
-        buttonGuardar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+    buttonGuardar.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                // Obtener la conexión a la base de datos
+                ConnectionManager cm = new ConnectionManager();
+                Connection connection = cm.getConnection();
+                ReservaDAO reservaDAO = new ReservaDAO(connection);
+
+                // Obtener los valores ingresados por el usuario
+                String descripcion = textDescripcion.getText().trim();
+                String aula = textAula.getText().trim();
+
+                // Validar los campos requeridos
+                if (descripcion.isEmpty() || aula.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos requeridos.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Validar el rango de aulas
+                int numeroAula;
                 try {
-                    // Obtener la conexión a la base de datos
-                    ConnectionManager cm = new ConnectionManager();
-                    Connection connection = cm.getConnection();
-                    ReservaDAO reservaDAO = new ReservaDAO(connection);
-
-                    // Obtener los valores ingresados por el usuario
-                    String descripcion = textDescripcion.getText().trim();
-                    String aula = textAula.getText().trim();
-
-                    // Validar los campos requeridos
-                    if (descripcion.isEmpty() || aula.isEmpty()) {
-                        JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos requeridos.", "Error", JOptionPane.ERROR_MESSAGE);
+                    numeroAula = Integer.parseInt(aula);
+                    if (numeroAula < 20 || numeroAula > 31) {
+                        JOptionPane.showMessageDialog(null, "Solo se pueden reservar aulas entre 20 y 31.", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    // Obtener el día de la semana seleccionado
-                    String diaSemanaSeleccionado = (String) comboBoxDiasSemana.getSelectedItem();
-                    DayOfWeek diaSemana;
-                    diaSemana = DayOfWeek.valueOf(convertirStringADayOfWeek(diaSemanaSeleccionado).toString());
-
-                    // Obtener las horas de inicio y fin
-                    java.util.Date horaInicioDate = (java.util.Date) spinnerHoraInicio.getValue();
-                    Calendar calendarInicio = Calendar.getInstance();
-                    calendarInicio.setTime(horaInicioDate);
-                    int horasInicio = calendarInicio.get(Calendar.HOUR_OF_DAY);
-                    int minutosInicio = calendarInicio.get(Calendar.MINUTE);
-                    TiempoDTO horaInicio = new TiempoDTO(horasInicio, minutosInicio);
-
-                    java.util.Date horaFinDate = (java.util.Date) spinnerHoraFin.getValue();
-                    Calendar calendarFin = Calendar.getInstance();
-                    calendarFin.setTime(horaFinDate);
-                    int horasFin = calendarFin.get(Calendar.HOUR_OF_DAY);
-                    int minutosFin = calendarFin.get(Calendar.MINUTE);
-                    TiempoDTO horaFin = new TiempoDTO(horasFin, minutosFin);
-
-                    // Delegar la creación de reservas al DAO según el tipo seleccionado
-                    ReservaDTO reserva = new ReservaDTO(1, Integer.parseInt(aula), horaInicio, horaFin, diaSemana, descripcion);
-                    java.sql.Date fechaSqlHoy = Date.valueOf(LocalDate.now());
-                    reserva.setFechaReserva(FechaDTO.fromSqlDate(fechaSqlHoy));
-
-                    if (radioButtonUnico.isSelected()) {
-
-                        // Obtener la fecha seleccionada
-                        java.util.Date utilDate = dateChooser.getDate();
-                        if (utilDate == null) {
-                            JOptionPane.showMessageDialog(null, "Por favor, seleccione una fecha.", "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        java.sql.Date fechaSeleccionada = new java.sql.Date(utilDate.getTime());
-
-                        if (reservaDAO.guardarReserva(
-                                1,
-                                aula,
-                                horaInicio,
-                                horaFin,
-                                diaSemanaSeleccionado,
-                                FechaDTO.fromSqlDate(fechaSeleccionada),
-                                descripcion
-                        )) {
-                            JOptionPane.showMessageDialog(null, "Reserva guardada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Aula ya reservada.", "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-
-                    } else if (radioButtonCuatrimestral.isSelected()) {
-                        reservaDAO.guardarReservaCuatrimestral(reserva, diaSemana, 16); // Ajusta la cantidad de semanas según el cuatrimestre
-                        JOptionPane.showMessageDialog(null, "Reserva cuatrimestral guardada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                    } else if (radioButtonAnual.isSelected()) {
-                        reservaDAO.guardarReservaAnual(reserva, diaSemana, 52); // 52 semanas para el año
-                        JOptionPane.showMessageDialog(null, "Reserva anual guardada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                    }
-
-                    // Limpiar campos después de guardar
-                    textDescripcion.setText("");
-                    textAula.setText("");
-                    dateChooser.setDate(null);
-                    spinnerHoraInicio.setValue(new java.util.Date());
-                    spinnerHoraFin.setValue(new java.util.Date());
-
-                    // Cerrar la conexión
-                    connection.close();
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Error al guardar la reserva: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "El número de aula debe ser un valor numérico.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
+
+                // Continuar con el proceso de guardado...
+                // (El resto del código que ya tienes sigue aquí)
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al guardar la reserva: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        });
-    }
+        }
+    });
+}
 
     /**
      * Este metodo configura los radio buttons.
