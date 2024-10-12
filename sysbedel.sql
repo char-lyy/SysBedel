@@ -104,10 +104,12 @@ CREATE TABLE Observacion (
 );
 
 ALTER TABLE reserva ADD COLUMN descripcion VARCHAR(255);
+ALTER TABLE reserva ADD COLUMN responsable VARCHAR(255);
+ALTER TABLE actividad ADD COLUMN responsable VARCHAR(255);
 ALTER TABLE Reserva MODIFY idReserva INT AUTO_INCREMENT;
 
-INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (20, 30, FALSE);
-INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (21, 30, FALSE);
+
+INSERT INTO Aula (numeroAula, capacidadAula, ocupada, responsable, hora, fechaOcupacion) VALUES (31, 30, FALSE, 'Margarita', '19:00:00','2024-11-11');
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (22, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (23, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (24, 30, FALSE);
@@ -118,8 +120,23 @@ INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (28, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (29, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (30, 30, FALSE);
 
-INSERT INTO Actividad (idActividad, fechaInicioActividad, fechaFinActividad, periodoActividad, tipoActividad)
-VALUES (1, '2024-09-23', '2024-09-23', 'Matutino', 'Clase');
+INSERT INTO Actividad (idActividad, fechaInicioActividad, fechaFinActividad, periodoActividad, tipoActividad, responsable)
+VALUES (2, '2024-09-23', '2024-09-23', 'Matutino', 'Clase','Margarita Alvarez');
 
-INSERT INTO Reserva(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad) VALUES (1, 1, 24, 1, '8:00:00', '10:00:00', '2024-09-23', '2024-09-23');
-INSERT INTO Reserva(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad) VALUES (2, 1, 24, 1, '8:00:00', '10:00:00', '2024-09-23', '2024-09-23');
+INSERT INTO Reserva(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad, responsable) 
+VALUES (1, 1, 24, 1, '08:00:00', '10:00:00', '2024-09-23', '2024-09-23', 'Margarita Alvarez');
+
+INSERT INTO Reserva(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad, responsable) VALUES (2, 1, 24, 1, '8:00:00', '10:00:00', '2024-09-23', '2024-09-23', 'Mirtha Legrand');
+ALTER TABLE aula ADD COLUMN observaciones VARCHAR(255);
+ALTER TABLE aula ADD COLUMN responsable VARCHAR(255);
+SET SQL_SAFE_UPDATES = 0;
+ALTER TABLE aula ADD COLUMN fechaOcupacion DATE DEFAULT NULL;
+UPDATE aula SET fechaOcupacion = '1970-01-01' WHERE fechaOcupacion IS NULL;
+ALTER TABLE aula MODIFY COLUMN fechaOcupacion DATE NOT NULL;
+SET SQL_SAFE_UPDATES = 1;  -- opcional
+ALTER TABLE aula ADD COLUMN hora TIME NOT NULL;
+ALTER TABLE aula DROP COLUMN fechaOcupacion;
+ALTER TABLE aula ADD COLUMN fecha DATE DEFAULT NULL;
+ALTER TABLE informe ADD COLUMN responsable VARCHAR(255);
+ALTER TABLE informe ADD COLUMN hora TIME NOT NULL;
+ALTER TABLE informe ADD COLUMN fecha DATE DEFAULT NULL;
