@@ -1,15 +1,14 @@
-package paqueteDTO;
+package utilidades;
 
 import java.sql.Time;
 import java.time.LocalTime;
-import utilidades.GestorEntradaConsola;
 
-public class TiempoDTO implements Comparable {
+public class Tiempo implements Comparable {
 
     private int horas;
     private int minutos;
 
-    public TiempoDTO() {
+    public Tiempo() {
     }
     
     /**
@@ -18,7 +17,7 @@ public class TiempoDTO implements Comparable {
      * @param minutos 
      */
 
-    public TiempoDTO(int horas, int minutos) {
+    public Tiempo(int horas, int minutos) {
         if (horas < 0 || horas > 23 || minutos < 0 || minutos > 59) {
             throw new IllegalArgumentException("Hora o minutos inválidos");
         }
@@ -69,7 +68,7 @@ public class TiempoDTO implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        TiempoDTO horaDTO = (TiempoDTO) o;
+        Tiempo horaDTO = (Tiempo) o;
 
         if (horas != horaDTO.horas) {
             return horas - horaDTO.horas;
@@ -80,44 +79,6 @@ public class TiempoDTO implements Comparable {
         }
 
         return 0;
-    }
-
-    public void cargarDatos() {
-        horas = cargarHoras();
-        minutos = cargarMinutos();
-    }
-    
-    /**
-     * Este metodo permite cargar las horas.
-     * @return verdadero si son validas las horas.
-     */
-
-    private int cargarHoras() {
-        int horasEntrantes;
-        boolean esValido;
-
-        do {
-            System.out.print("Horas (0-24): ");
-            horasEntrantes = GestorEntradaConsola.leerEntero();
-            esValido = horasEntrantes >= 0 && horasEntrantes <= 24;
-        } while (!esValido);
-        return horasEntrantes;
-    }
-    
-    /**
-     * Este metodo carga los minutos-
-     * @return verdadero si los minutos cargados son validos.
-     */
-
-    private int cargarMinutos() {
-        int minutosEntrantes;
-        boolean esValido;
-        do {
-            System.out.print("Minutos (0-59): ");
-            minutosEntrantes = GestorEntradaConsola.leerEntero();
-            esValido = minutosEntrantes >= 0 && minutosEntrantes <= 59;
-        } while (!esValido);
-        return minutosEntrantes;
     }
 
     /**
@@ -136,10 +97,10 @@ public class TiempoDTO implements Comparable {
      * @param sqlTime Un objeto java.sql.Time.
      * @return Una instancia de TiempoDTO que representa la misma hora.
      */
-    public static TiempoDTO fromSqlTime(Time sqlTime) {
+    public static Tiempo fromSqlTime(Time sqlTime) {
         // Convertimos el java.sql.Time a LocalTime
         LocalTime localTime = sqlTime.toLocalTime();
         // Creamos una instancia de TiempoDTO usando las horas y minutos de LocalTime
-        return new TiempoDTO(localTime.getHour(), localTime.getMinute());
+        return new Tiempo(localTime.getHour(), localTime.getMinute());
     }
 }

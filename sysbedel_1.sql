@@ -1,41 +1,25 @@
 CREATE SCHEMA sysbedel;
 USE sysbedel;
 
-CREATE TABLE CatedraDocente (
-    legajoDocente VARCHAR(50) NOT NULL,
-    codigoCatedra VARCHAR(50) NOT NULL,
-    PRIMARY KEY (legajoDocente, codigoCatedra),
-    FOREIGN KEY (legajoDocente) REFERENCES Docente(legajoDocente),
-    FOREIGN KEY (codigoCatedra) REFERENCES Departamento(codigoDepartamento)
-);
-
 CREATE TABLE Aula (
     numeroAula INT PRIMARY KEY NOT NULL,
     capacidadAula INT NOT NULL,
     ocupada BOOLEAN NOT NULL
 );
 
-
-CREATE TABLE Actividad (
-    idActividad INT PRIMARY KEY,
-    fechaInicioActividad DATE NOT NULL,
-    fechaFinActividad DATE NOT NULL,
-    periodoActividad VARCHAR(50) NOT NULL,
-    tipoActividad VARCHAR(50) NOT NULL
-);
-
 CREATE TABLE Reserva (
-    idReserva INT PRIMARY KEY,
-    idActividad INT NOT NULL,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     numeroAula INT NOT NULL,
-    confirmada BOOLEAN NOT NULL DEFAULT FALSE,
     horaInicio TIME NOT NULL,
     horaFin TIME NOT NULL,
-    fechaReserva DATE NOT NULL, -- Fecha en el que se realizo la reserva
+    fechaHoraReserva DATETIME NOT NULL, -- Fecha en el que se realizo la reserva
     fechaActividad DATE NOT NULL, -- Fecha en la que se realiza la actividad
-    FOREIGN KEY (idActividad) REFERENCES Actividad(idActividad),
+    descripcion VARCHAR(255),
+    responsable VARCHAR(255),
     FOREIGN KEY (numeroAula) REFERENCES Aula(numeroAula)
 );
+
+
 
 CREATE TABLE Recurso (
     codigoRecurso INT AUTO_INCREMENT PRIMARY KEY,
@@ -86,9 +70,6 @@ INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (27, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (28, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (29, 30, FALSE);
 INSERT INTO Aula (numeroAula, capacidadAula, ocupada) VALUES (30, 30, FALSE);
-
-INSERT INTO Actividad (idActividad, fechaInicioActividad, fechaFinActividad, periodoActividad, tipoActividad, responsable)
-VALUES (2, '2024-09-23', '2024-09-23', 'Matutino', 'Clase','Margarita Alvarez');
 
 INSERT INTO Reserva(idReserva, idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad, responsable) 
 VALUES (1, 1, 24, 1, '08:00:00', '10:00:00', '2024-09-23', '2024-09-23', 'Margarita Alvarez');

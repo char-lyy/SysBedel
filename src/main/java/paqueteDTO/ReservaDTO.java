@@ -2,6 +2,8 @@ package paqueteDTO;
 
 import java.sql.Date;
 import java.time.DayOfWeek;
+import utilidades.Tiempo;
+import utilidades.Fecha;
 
 public class ReservaDTO {
 
@@ -9,15 +11,15 @@ public class ReservaDTO {
     private int idActividad;
     private int numeroAula;
     private boolean confirmada;
-    private TiempoDTO horaInicio;
-    private TiempoDTO horaFin;
-    private FechaDTO fechaReserva;
-    private FechaDTO fechaActividad;
+    private Tiempo horaInicio;
+    private Tiempo horaFin;
+    private Fecha fechaReserva;
+    private Fecha fechaActividad;
     private DayOfWeek diaActividadPeriodica;
     private String descripcion;
     private String responsable;
 
-    public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, TiempoDTO horaInicio, TiempoDTO horaFin, FechaDTO fechaReserva, FechaDTO fechaActividad, DayOfWeek diaActividadPeriodica, String descripcion, String responsable) {
+    public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, Tiempo horaInicio, Tiempo horaFin, Fecha fechaReserva, Fecha fechaActividad, DayOfWeek diaActividadPeriodica, String descripcion, String responsable) {
         this.idReserva = idReserva;
         this.idActividad = idActividad;
         this.numeroAula = numeroAula;
@@ -39,10 +41,7 @@ public class ReservaDTO {
         this.responsable = responsable;
     }
     
-
-    
-    
-    public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, TiempoDTO horaInicio, TiempoDTO horaFin, FechaDTO fechaReserva, FechaDTO fechaActividad, String descripcion) {
+    public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, Tiempo horaInicio, Tiempo horaFin, Fecha fechaReserva, Fecha fechaActividad, String descripcion) {
         this.idReserva = idReserva;
         this.idActividad = idActividad;
         this.numeroAula = numeroAula;
@@ -54,23 +53,19 @@ public class ReservaDTO {
         this.fechaActividad = fechaActividad;
     }
 
-    public ReservaDTO(int idActividad, int numeroAula, FechaDTO fechaReserva) {
+    public ReservaDTO(int idActividad, int numeroAula, Fecha fechaReserva) {
         this.idActividad = idActividad;
         this.numeroAula = numeroAula;
         this.fechaReserva = fechaReserva;
     }
 
-    public ReservaDTO(int idActividad, int numeroAula, TiempoDTO horaInicio, TiempoDTO horaFin, DayOfWeek diaSemana, String descripcion) {
+    public ReservaDTO(int idActividad, int numeroAula, Tiempo horaInicio, Tiempo horaFin, DayOfWeek diaSemana, String descripcion) {
         this.idActividad = idActividad;
         this.numeroAula = numeroAula;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
         this.diaActividadPeriodica = diaSemana;
         this.descripcion = descripcion;
-    }
-
-    public ReservaDTO() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
     public int getIdReserva() {
@@ -105,35 +100,35 @@ public class ReservaDTO {
         this.confirmada = confirmada;
     }
 
-    public TiempoDTO getHoraInicio() {
+    public Tiempo getHoraInicio() {
         return horaInicio;
     }
 
-    public void setHoraInicio(TiempoDTO horaInicio) {
+    public void setHoraInicio(Tiempo horaInicio) {
         this.horaInicio = horaInicio;
     }
 
-    public TiempoDTO getHoraFin() {
+    public Tiempo getHoraFin() {
         return horaFin;
     }
 
-    public void setHoraFin(TiempoDTO horaFin) {
+    public void setHoraFin(Tiempo horaFin) {
         this.horaFin = horaFin;
     }
 
-    public FechaDTO getFechaReserva() {
+    public Fecha getFechaReserva() {
         return fechaReserva;
     }
 
-    public void setFechaReserva(FechaDTO fechaReserva) {
+    public void setFechaReserva(Fecha fechaReserva) {
         this.fechaReserva = fechaReserva;
     }
 
-    public FechaDTO getFechaActividad() {
+    public Fecha getFechaActividad() {
         return fechaActividad;
     }
 
-    public void setFechaActividad(FechaDTO fechaActividad) {
+    public void setFechaActividad(Fecha fechaActividad) {
         this.fechaActividad = fechaActividad;
     }
 

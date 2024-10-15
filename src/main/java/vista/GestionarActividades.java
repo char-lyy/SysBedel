@@ -6,17 +6,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.Date;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.Map;
 import paqueteDAO.ReservaDAO;
-import paqueteDTO.AulaDTO;
-import paqueteDTO.FechaDTO;
-import paqueteDTO.ReservaDTO;
-import paqueteDTO.TiempoDTO;
-import principal.ConnectionManager;
+import utilidades.ConnectionManager;
+import utilidades.Tiempo;
 
 public class GestionarActividades extends JFrame {
 
@@ -168,8 +162,8 @@ public class GestionarActividades extends JFrame {
                     int horasFin = calendar.get(Calendar.HOUR_OF_DAY);
                     int minutosFin = calendar.get(Calendar.MINUTE);
 
-                    TiempoDTO horaInicio = new TiempoDTO(horasInicio, minutosInicio);
-                    TiempoDTO horaFin = new TiempoDTO(horasFin, minutosFin);
+                    Tiempo horaInicio = new Tiempo(horasInicio, minutosInicio);
+                    Tiempo horaFin = new Tiempo(horasFin, minutosFin);
 
                     reservaDAO.mostrarTablaAulasDisponibles(fecha, horaInicio, horaFin);
 
@@ -346,4 +340,3 @@ public class GestionarActividades extends JFrame {
 
     }
 }
-

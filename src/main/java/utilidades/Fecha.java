@@ -1,11 +1,11 @@
-package paqueteDTO;
+package utilidades;
 
 import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import utilidades.GestorEntradaConsola;
+import java.time.ZoneId;
 
-public class FechaDTO implements Comparable {
+public class Fecha implements Comparable {
 
     private int dia;
     private int mes;
@@ -14,13 +14,13 @@ public class FechaDTO implements Comparable {
     // Arreglo con los días de cada mes para validación
     private static final int[] DIAS_POR_MES = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-    public FechaDTO() {
+    public Fecha() {
         this.dia = 1;
         this.mes = 1;
         this.año = 1970;
     }
 
-    public FechaDTO(int dia, int mes, int año) {
+    public Fecha(int dia, int mes, int año) {
         if (esFechaValida(dia, mes, año)) {
             this.dia = dia;
             this.mes = mes;
@@ -54,6 +54,7 @@ public class FechaDTO implements Comparable {
 
     /**
      * Este metodo verifica si el año es bisiesto.
+     *
      * @param año
      * @return Verdadero si es bisiesto
      */
@@ -152,7 +153,7 @@ public class FechaDTO implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        FechaDTO otraFecha = (FechaDTO) o;
+        Fecha otraFecha = (Fecha) o;
         if (this.año != otraFecha.año) {
             return this.año - otraFecha.año;
         } else if (this.mes != otraFecha.mes) {
@@ -168,7 +169,7 @@ public class FechaDTO implements Comparable {
      *
      * @return verdadero si se valida la fecha.
      */
-    public FechaDTO cargarDatos() {
+    public Fecha cargarDatos() {
 
         int diaEntrante, mesEntrante, añoEntrante;
 
@@ -253,18 +254,30 @@ public class FechaDTO implements Comparable {
      * @param sqlDate Una fecha de tipo java.sql.Date.
      * @return Una instancia de FechaDTO que representa la misma fecha.
      */
-    public static FechaDTO fromSqlDate(Date sqlDate) {
+    public static Fecha fromSqlDate(Date sqlDate) {
         LocalDate localDate = sqlDate.toLocalDate();
-        return new FechaDTO(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
+        return new Fecha(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
     }
-    
+
+    /**
+     * Convierte una instancia de java.util.Date en una instancia de FechaDTO.
+     *
+     * @param utilDate Una fecha de tipo java.util.Date.
+     * @return Una instancia de FechaDTO que representa la misma fecha.
+     */
+    public static Fecha fromUtilDate(java.util.Date utilDate) {
+        LocalDate localDate = utilDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return new Fecha(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
+    }
+
     /**
      * Calcula el dia de la semana de una fecha
+     *
      * @return el dia de la semana de una fecha.
      */
     public DayOfWeek getDiaSemana() {
         LocalDate localDate = LocalDate.of(año, mes, dia);
         return localDate.getDayOfWeek();
     }
-    
+
 }

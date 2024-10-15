@@ -1,4 +1,4 @@
-package principal;
+package utilidades;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,7 +8,7 @@ public class ConnectionManager {
 
     private static final String DB_URL = "jdbc:mysql://localhost:3306/sysbedel";
     private static final String USER = "root"; // Cambia esto por tu usuario de MySQL
-    private static final String PASSWORD = "bocajuniorscampeon021020021234..."; // Cambia esto por tu contraseña de MySQL
+    private static final String PASSWORD = "7707"; // Cambia esto por tu contraseña de MySQL
     private Connection connection;
 
     public ConnectionManager() {

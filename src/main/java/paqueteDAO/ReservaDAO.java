@@ -15,10 +15,10 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
-import paqueteDTO.AulaDTO;
-import paqueteDTO.FechaDTO;
+import paqueteDTO.NuevaReservaDTO;
+import utilidades.Fecha;
 import paqueteDTO.ReservaDTO;
-import paqueteDTO.TiempoDTO;
+import utilidades.Tiempo;
 
 public class ReservaDAO {
 
@@ -33,7 +33,7 @@ public class ReservaDAO {
         this.connection = connection;
     }
 
-    public void mostrarTablaAulasDisponibles(Date fecha, TiempoDTO horaInicio, TiempoDTO horaFin) {
+    public void mostrarTablaAulasDisponibles(Date fecha, Tiempo horaInicio, Tiempo horaFin) {
         try {
             List<Map<String, Object>> aulasDisponibles = obtenerTablaAulasDisponibles(fecha, horaInicio, horaFin);
 
@@ -87,7 +87,7 @@ public class ReservaDAO {
      * capacidad.
      * @throws SQLException Si ocurre algún error en la consulta.
      */
-    public List<Map<String, Object>> obtenerTablaAulasDisponibles(java.sql.Date fecha, TiempoDTO horaInicio, TiempoDTO horaFin) throws SQLException {
+    public List<Map<String, Object>> obtenerTablaAulasDisponibles(java.sql.Date fecha, Tiempo horaInicio, Tiempo horaFin) throws SQLException {
 
         List<Map<String, Object>> tablaResultado;
 
@@ -127,7 +127,7 @@ public class ReservaDAO {
      * @return
      * @throws SQLException
      */
-    public List<Integer> obtenerAulasDisponibles(java.sql.Date fecha, TiempoDTO horaInicio, TiempoDTO horaFin) throws SQLException {
+    public List<Integer> obtenerAulasDisponibles(java.sql.Date fecha, Tiempo horaInicio, Tiempo horaFin) throws SQLException {
         List<Integer> aulasDisponibles = new ArrayList<>();
 
         String queryAulas = "SELECT numeroAula FROM Aula";
@@ -202,7 +202,7 @@ public class ReservaDAO {
         }
 
 //        }
-        String query = "INSERT INTO Reserva (idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad, descripcion) "
+        String query = "INSERT INTO Reserva (numeroAula, horaInicio, horaFin, fechaReserva, fechaActividad, descripcion, responsable) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
 //            stmt.setInt(1, reserva.getIdReserva());
@@ -214,7 +214,7 @@ public class ReservaDAO {
             stmt.setDate(6, reserva.getFechaReserva().toSqlDate());
             stmt.setDate(7, reserva.getFechaActividad().toSqlDate());
             stmt.setString(8, reserva.getDescripcion());
-
+            
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;
         }
@@ -235,7 +235,7 @@ public class ReservaDAO {
      * @throws SQLException
      */
 
-    public boolean guardarReserva(int codigoActividad, String aula, TiempoDTO horaInicio, TiempoDTO horaFin, String diaSemana, FechaDTO fechaActividadDTO, String descripcion, String responsable) throws SQLException {
+    public boolean guardarReserva(String aula, Tiempo horaInicio, Tiempo horaFin, String diaSemana, Fecha fechaActividadDTO, String descripcion, String responsable) throws SQLException {
 
         // Verificar si hay un conflicto de horario antes de proceder
         if (hayReservaEnRango(fechaActividadDTO.toSqlDate(), horaInicio, horaFin, aula)) {
@@ -244,28 +244,26 @@ public class ReservaDAO {
         }
 
         // Consulta SQL para insertar la reserva
-        String sql = "INSERT INTO Reserva (idActividad, numeroAula, confirmada, horaInicio, horaFin, fechaReserva, fechaActividad, descripcion, responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Reserva (numeroAula, horaInicio, horaFin, fechaReserva, fechaActividad, descripcion, responsable) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         // Fecha de la reserva (fecha actual)
         Date fechaReserva = new Date(System.currentTimeMillis());
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             // Configuración de parámetros para la consulta
-            preparedStatement.setInt(1, codigoActividad); // Identificador de la actividad
-            preparedStatement.setInt(2, Integer.parseInt(aula)); // Número de aula como entero
-            preparedStatement.setBoolean(3, false); // La reserva no está confirmada inicialmente
+            preparedStatement.setInt(1, Integer.parseInt(aula)); // Número de aula como entero
 
             // Establecer las horas de inicio y fin de la reserva
-            preparedStatement.setTime(4, java.sql.Time.valueOf(horaInicio.getHoras() + ":" + horaInicio.getMinutos() + ":00"));
-            preparedStatement.setTime(5, java.sql.Time.valueOf(horaFin.getHoras() + ":" + horaFin.getMinutos() + ":00"));
+            preparedStatement.setTime(2, java.sql.Time.valueOf(horaInicio.getHoras() + ":" + horaInicio.getMinutos() + ":00"));
+            preparedStatement.setTime(3, java.sql.Time.valueOf(horaFin.getHoras() + ":" + horaFin.getMinutos() + ":00"));
 
             // Establecer la fecha de la reserva (fecha actual) y la fecha de la actividad
-            preparedStatement.setDate(6, fechaReserva);
-            preparedStatement.setDate(7, fechaActividadDTO.toSqlDate());
+            preparedStatement.setDate(4, fechaReserva);
+            preparedStatement.setDate(5, fechaActividadDTO.toSqlDate());
 
             // Descripción y responsable de la reserva
-            preparedStatement.setString(8, descripcion);
-            preparedStatement.setString(9, responsable);
+            preparedStatement.setString(6, descripcion);
+            preparedStatement.setString(7, responsable);
 
             // Ejecutar la actualización en la base de datos
             preparedStatement.executeUpdate();
@@ -351,12 +349,12 @@ public class ReservaDAO {
      * @throws SQLException
      */
 
-    public boolean realizarReserva(String tipoReserva, String diaSeleccionado, TiempoDTO horaInicio, TiempoDTO horaFin, ReservaDTO reserva) throws SQLException {
+    public boolean realizarReserva(String tipoReserva, String diaSeleccionado, Tiempo horaInicio, Tiempo horaFin, ReservaDTO reserva) throws SQLException {
         if (tipoReserva.equals("Anual") || tipoReserva.equals("Cuatrimestral")) {
             // Convertir el día seleccionado a una fecha concreta.
             Date fechaActividad = calcularFechaActividad(diaSeleccionado);
 
-            reserva.setFechaActividad(FechaDTO.fromSqlDate(fechaActividad));
+            reserva.setFechaActividad(Fecha.fromSqlDate(fechaActividad));
 
             // 1. Verificar si hay un conflicto de horarios para la reserva.
             if (hayConflictoDeHorario(reserva)) {
@@ -420,14 +418,17 @@ public class ReservaDAO {
 
         for (int i = 0; i < cantidadSemanas; i++) {
             Date fechaActividad = calcularFechaProxima(fechaInicio, diaSeleccionado, i * 7);
-            reserva.setFechaActividad(FechaDTO.fromSqlDate(fechaActividad));
+            reserva.setFechaActividad(Fecha.fromSqlDate(fechaActividad));
 
             if (hayReservaEnRango(fechaActividad, reserva.getHoraInicio(), reserva.getHoraFin(), String.valueOf(reserva.getNumeroAula()))) {
                 throw new SQLException("No se puede realizar la reserva: ya existe una reserva en "
                         + "el aula " + reserva.getNumeroAula() + " el " + fechaActividad
                         + " entre " + reserva.getHoraInicio() + " y " + reserva.getHoraFin());
             }
-            insertarReserva(reserva);
+            
+            NuevaReservaDAO nuevaReservaDAO = new NuevaReservaDAO(connection);
+            
+            nuevaReservaDAO.insertarReserva(new NuevaReservaDTO(reserva.getNumeroAula(), reserva.getHoraInicio(), reserva.getHoraFin(), reserva.getFechaActividad(), reserva.getDescripcion(), reserva.getResponsable()));
         }
     }
 
@@ -458,7 +459,7 @@ public class ReservaDAO {
 
         for (int i = 0; i < cantidadSemanas; i++) {
             java.sql.Date fechaActividad = calcularFechaProxima(fechaInicio, diaSeleccionado, i * 7);
-            reserva.setFechaActividad(FechaDTO.fromSqlDate(fechaActividad));
+            reserva.setFechaActividad(Fecha.fromSqlDate(fechaActividad));
             insertarReserva(reserva);
         }
     }
@@ -493,7 +494,7 @@ public class ReservaDAO {
      * @throws SQLException
      */
 
-    public boolean hayReservaEnRango(Date fechaActividad, TiempoDTO horaInicio, TiempoDTO horaFin, String aula) throws SQLException {
+    public boolean hayReservaEnRango(Date fechaActividad, Tiempo horaInicio, Tiempo horaFin, String aula) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Reserva WHERE numeroAula = ? AND fechaActividad = ? "
                 + "AND (horaInicio < ? AND horaFin > ?)"; // Verifica si hay un solapamiento
 

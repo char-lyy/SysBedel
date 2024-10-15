@@ -1,7 +1,7 @@
 package vista;
 
 import paqueteDTO.RecursoDTO;
-import principal.ConnectionManager;
+import utilidades.ConnectionManager;
 
 import javax.swing.*;
 import java.awt.*;

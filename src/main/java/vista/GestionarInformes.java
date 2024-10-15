@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import principal.ConnectionManager;
+import utilidades.ConnectionManager;
 
 public class GestionarInformes extends JFrame {
 

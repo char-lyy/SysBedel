@@ -1,7 +1,7 @@
 package paqueteDAO;
 
 import paqueteDTO.AulaDTO;
-import principal.ConnectionManager;
+import utilidades.ConnectionManager;
 
 import java.sql.*;
 import java.util.ArrayList;
