@@ -7,14 +7,12 @@ package vista.panels;
 import com.toedter.calendar.JDateChooser;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -24,11 +22,11 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import paqueteDAO.AulaDAO;
-import paqueteDAO.ReservaDAO;
 import paqueteDTO.AulaDTO;
 import paqueteDTO.ReservaDTO;
-import utilidades.ConnectionManager;
+import services.ServicioReserva;
 import utilidades.Fecha;
+import utilidades.FechaTiempo;
 import utilidades.Tiempo;
 
 /**
@@ -208,7 +206,6 @@ public class PanelFormularioReservas extends JPanel {
     private class Controlador {
 
         public Controlador() {
-            configurarEventos();
         }
 
         /**
@@ -221,94 +218,108 @@ public class PanelFormularioReservas extends JPanel {
         }
 
         private void configurarBotonGuardar() {
-            buttonGuardar.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Connection connection = null; // Inicializar la conexión
-                    try {
-                        // Obtener la conexión a la base de datos
-                        ConnectionManager cm = new ConnectionManager();
-                        connection = cm.getConnection();
-                        ReservaDAO reservaDAO = new ReservaDAO(connection);
+            buttonGuardar.addActionListener((ActionEvent e) -> {
+                buttonGuardar.setEnabled(false);
+                try {
 
-                        // Obtener los valores ingresados por el usuario
-                        String descripcion = textDescripcion.getText().trim();
-                        String aula = (String) comboBoxAulas.getSelectedItem(); // Obtener aula del JComboBox
-                        String responsable = textResponsable.getText().trim();
-                        // Validar los campos requeridos
-                        if (descripcion.isEmpty() || aula == null) {
-                            JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos requeridos.", "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        // Obtener el día de la semana seleccionado
-                        String diaSemanaSeleccionado = (String) comboBoxDiasSemana.getSelectedItem();
-                        DayOfWeek diaSemana = convertirStringADayOfWeek(diaSemanaSeleccionado);
-
-                        // Obtener las horas de inicio y fin
-                        int horasInicio = Integer.parseInt((String) comboBoxHoraInicio.getSelectedItem());
-                        int minutosInicio = Integer.parseInt((String) comboBoxMinutosInicio.getSelectedItem());
-                        Tiempo horaInicio = new Tiempo(horasInicio, minutosInicio);
-
-                        int horasFin = Integer.parseInt((String) comboBoxHoraFin.getSelectedItem());
-                        int minutosFin = Integer.parseInt((String) comboBoxMinutosFin.getSelectedItem());
-                        Tiempo horaFin = new Tiempo(horasFin, minutosFin);
-
-                        // Delegar la creación de reservas al DAO según el tipo seleccionado
-                        ReservaDTO reserva = new ReservaDTO(1, Integer.parseInt(aula), horaInicio, horaFin, diaSemana, descripcion);
-                        java.sql.Date fechaSqlHoy = new java.sql.Date(System.currentTimeMillis()); // Obtener la fecha de hoy
-                        reserva.setFechaReserva(Fecha.fromSqlDate(fechaSqlHoy));
-
-                        if (radioButtonUnico.isSelected()) {
-                            // Obtener la fecha seleccionada
-                            java.util.Date utilDate = dateChooser.getDate();
-                            if (utilDate == null) {
-                                JOptionPane.showMessageDialog(null, "Por favor, seleccione una fecha.", "Error", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                            java.sql.Date fechaSeleccionada = new java.sql.Date(utilDate.getTime());
-                            if (reservaDAO.guardarReserva(
-                                    aula,
-                                    horaInicio,
-                                    horaFin,
-                                    diaSemanaSeleccionado,
-                                    Fecha.fromSqlDate(fechaSeleccionada),
-                                    descripcion,
-                                    responsable
-                            )) {
-                                JOptionPane.showMessageDialog(null, "Reserva guardada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                            } else {
-                                JOptionPane.showMessageDialog(null, "Aula ya reservada.", "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-                        } else if (radioButtonCuatrimestral.isSelected()) {
-                            reservaDAO.guardarReservaCuatrimestral(reserva, diaSemana, 16); // Ajusta la cantidad de semanas según el cuatrimestre
-                            JOptionPane.showMessageDialog(null, "Reserva cuatrimestral guardada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                        } else if (radioButtonAnual.isSelected()) {
-                            reservaDAO.guardarReservaAnual(reserva, diaSemana, 52); // 52 semanas para el año
-                            JOptionPane.showMessageDialog(null, "Reserva anual guardada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                        }
-
-                        // Limpiar campos después de guardar
-                        textDescripcion.setText("");
-                        comboBoxAulas.setSelectedIndex(-1); // Limpiar el JComboBox
-                        dateChooser.setDate(null);
-                        comboBoxHoraInicio.setSelectedIndex(0); // Restablecer el JComboBox a su valor por defecto
-                        comboBoxHoraFin.setSelectedIndex(0); // Restablecer el JComboBox a su valor por defecto
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Error al guardar la reserva: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    } finally {
-                        // Cerrar la conexión si se abrió
-                        if (connection != null) {
-                            try {
-                                connection.close();
-                            } catch (SQLException ex) {
-                                Logger.getLogger(PanelFormularioReservas.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
+                    if (!validarCampos()) {
+                        JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos requeridos.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
+                    ServicioReserva servicioReserva = new ServicioReserva();
+
+                    ReservaDTO reserva = generarReservaDTO();
+                    if (reserva == null) {
+                        return;  // Se detiene si falta algún campo obligatorio
+                    }
+
+                    if (radioButtonUnico.isSelected()) {
+                        procesarReservaUnica(reserva, servicioReserva);
+                    } else if (radioButtonCuatrimestral.isSelected()) {
+                        procesarReservaCuatrimestral(reserva, servicioReserva);
+                    } else if (radioButtonAnual.isSelected()) {
+                        procesarReservaAnual(reserva, servicioReserva);
+                    }
+
+                } catch (HeadlessException | SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Error al guardar la reserva: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    buttonGuardar.setEnabled(true);
                 }
             });
+        }
+
+        private ReservaDTO generarReservaDTO() {
+            // Obtener valores de entrada
+            String descripcion = textDescripcion.getText().trim();
+            String aula = (String) comboBoxAulas.getSelectedItem();
+            String responsable = textResponsable.getText().trim();
+
+            Tiempo horaInicio = obtenerHora(comboBoxHoraInicio, comboBoxMinutosInicio);
+            Tiempo horaFin = obtenerHora(comboBoxHoraFin, comboBoxMinutosFin);
+
+            // Crear DTO de reserva
+            ReservaDTO reserva = new ReservaDTO(aula, horaInicio, horaFin, FechaTiempo.ahora(), descripcion, responsable);
+
+            return reserva;
+        }
+
+        private Tiempo obtenerHora(JComboBox<String> comboHora, JComboBox<String> comboMinutos) {
+            int horas = Integer.parseInt((String) comboHora.getSelectedItem());
+            int minutos = Integer.parseInt((String) comboMinutos.getSelectedItem());
+            return new Tiempo(horas, minutos);
+        }
+
+        private void procesarReservaUnica(ReservaDTO reserva, ServicioReserva servicioReserva) throws SQLException {
+            java.util.Date utilDate = dateChooser.getDate();
+            if (utilDate == null) {
+                JOptionPane.showMessageDialog(null, "Por favor, seleccione una fecha.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            java.sql.Date fechaSeleccionada = new java.sql.Date(utilDate.getTime());
+            reserva.setFechaActividad(Fecha.fromSqlDate(fechaSeleccionada));
+            servicioReserva.guardarReservaUnica(reserva);
+            JOptionPane.showMessageDialog(null, "Reserva guardada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+        }
+
+        private void procesarReservaCuatrimestral(ReservaDTO reserva, ServicioReserva servicioReserva) throws SQLException {
+            String diaSemanaSeleccionado = (String) comboBoxDiasSemana.getSelectedItem();
+            DayOfWeek diaSemana = convertirStringADayOfWeek(diaSemanaSeleccionado);
+            servicioReserva.guardarReservaCuatrimestral(reserva, diaSemana);
+            JOptionPane.showMessageDialog(null, "Reserva cuatrimestral guardada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        private void procesarReservaAnual(ReservaDTO reserva, ServicioReserva servicioReserva) throws SQLException {
+            String diaSemanaSeleccionado = (String) comboBoxDiasSemana.getSelectedItem();
+            DayOfWeek diaSemana = convertirStringADayOfWeek(diaSemanaSeleccionado);
+            servicioReserva.guardarReservaAnual(reserva, diaSemana);
+            JOptionPane.showMessageDialog(null, "Reserva anual guardada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        private boolean validarCampos() {
+            if (textDescripcion.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Por favor, complete el campo de descripción.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            if (comboBoxAulas.getSelectedItem() == null || ((String) comboBoxAulas.getSelectedItem()).isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Por favor, seleccione un aula.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            if (textResponsable.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Por favor, complete el campo de responsable.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            return true; // Todos los campos están completos
+        }
+
+        private void limpiarCampos() {
+            textDescripcion.setText("");
+            comboBoxAulas.setSelectedIndex(-1);
+            textResponsable.setText("");
+            dateChooser.setDate(null);
+            comboBoxHoraInicio.setSelectedIndex(0);
+            comboBoxHoraFin.setSelectedIndex(0);
         }
 
         /**

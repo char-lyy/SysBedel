@@ -103,4 +103,6 @@ public class Tiempo implements Comparable {
         // Creamos una instancia de TiempoDTO usando las horas y minutos de LocalTime
         return new Tiempo(localTime.getHour(), localTime.getMinute());
     }
+    
+    
 }

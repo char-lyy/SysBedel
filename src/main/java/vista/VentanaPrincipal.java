@@ -1,6 +1,10 @@
 package vista;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
+import vista.frames.FrameReservas;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -15,7 +19,13 @@ public class VentanaPrincipal extends JFrame {
         // Menú de Gestión de Actividades Académicas
         JMenu menuActividades = new JMenu("Actividades Académicas");
         JMenuItem itemGestionarActividades = new JMenuItem("Gestionar Actividades");
-        itemGestionarActividades.addActionListener(e -> new GestionarActividades().setVisible(true));
+        itemGestionarActividades.addActionListener(e -> {
+            try {
+                new FrameReservas().setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         menuActividades.add(itemGestionarActividades);
 
         // Menú de Gestión de Informes

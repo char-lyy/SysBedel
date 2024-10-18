@@ -14,12 +14,14 @@ import vista.panels.PanelTablaReservas;
  */
 public class FrameReservas extends JFrame {
 
-    private PanelFormularioReservas panelFormularioReservas = new PanelFormularioReservas();
-    private PanelTablaReservas panelReservas;
+    private final PanelFormularioReservas panelFormularioReservas;
+    private final PanelTablaReservas panelReservas;
 
     public FrameReservas() throws SQLException {
         
-        this.panelReservas = new PanelTablaReservas();
+        panelReservas = new PanelTablaReservas();
+        
+        panelFormularioReservas = new PanelFormularioReservas();
         
         setTitle("Reservas");
         
@@ -35,7 +37,7 @@ public class FrameReservas extends JFrame {
         setLayout(new GridLayout(1, 2));
 
         setVisible(true);
-
+        
         add(panelFormularioReservas);
         
         add(panelReservas);

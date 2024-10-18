@@ -259,14 +259,33 @@ public class Fecha implements Comparable {
         return new Fecha(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
     }
 
-    /**
-     * Convierte una instancia de java.util.Date en una instancia de FechaDTO.
-     *
-     * @param utilDate Una fecha de tipo java.util.Date.
-     * @return Una instancia de FechaDTO que representa la misma fecha.
-     */
     public static Fecha fromUtilDate(java.util.Date utilDate) {
+        // Si utilDate es una instancia de java.sql.Date (que no soporta toInstant)
+        if (utilDate instanceof java.sql.Date) {
+            // Convertimos usando toLocalDate() de java.sql.Date
+            java.sql.Date sqlDate = (java.sql.Date) utilDate;
+            LocalDate localDate = sqlDate.toLocalDate();
+            return new Fecha(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
+        }
+
+        // Si es java.util.Date normal
         LocalDate localDate = utilDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return new Fecha(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
+    }
+
+    public java.util.Date toUtilDate() {
+        // Crear un LocalDate con los valores de la instancia de Fecha
+        LocalDate localDate = LocalDate.of(this.año, this.mes, this.dia);
+
+        // Convertir LocalDate a java.util.Date
+        return java.util.Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    public LocalDate toLocalDate() {
+        return LocalDate.of(año, mes, dia);
+    }
+
+    public static Fecha fromLocalDate(LocalDate localDate) {
         return new Fecha(localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
     }
 

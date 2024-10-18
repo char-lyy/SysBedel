@@ -1,87 +1,103 @@
 package paqueteDTO;
 
-import java.sql.Date;
-import java.time.DayOfWeek;
-import utilidades.Tiempo;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import utilidades.Fecha;
+import utilidades.Tiempo;
+import utilidades.FechaTiempo;
 
 public class ReservaDTO {
 
-    private int idReserva;
-    private int idActividad;
+    private int id;
     private int numeroAula;
-    private boolean confirmada;
     private Tiempo horaInicio;
     private Tiempo horaFin;
-    private Fecha fechaReserva;
-    private Fecha fechaActividad;
-    private DayOfWeek diaActividadPeriodica;
+    private FechaTiempo fechaHoraReserva; // Representa la fecha y hora en que se realizó la reserva
+    private Fecha fechaActividad; // Fecha de la actividad
     private String descripcion;
     private String responsable;
 
-    public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, Tiempo horaInicio, Tiempo horaFin, Fecha fechaReserva, Fecha fechaActividad, DayOfWeek diaActividadPeriodica, String descripcion, String responsable) {
-        this.idReserva = idReserva;
-        this.idActividad = idActividad;
+    public ReservaDTO() {
+    }
+
+    public ReservaDTO(int id, int numeroAula, Tiempo horaInicio, Tiempo horaFin,
+            FechaTiempo fechaHoraReserva, Fecha fechaActividad,
+            String descripcion, String responsable) {
+        this.id = id;
         this.numeroAula = numeroAula;
-        this.confirmada = confirmada;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
-        this.fechaReserva = fechaReserva;
+        this.fechaHoraReserva = fechaHoraReserva;
         this.fechaActividad = fechaActividad;
-        this.diaActividadPeriodica = diaActividadPeriodica;
         this.descripcion = descripcion;
         this.responsable = responsable;
     }
 
-    public String getResponsable() {
-        return responsable;
-    }
-
-    public void setResponsable(String responsable) {
+    public ReservaDTO(int numeroAula, Tiempo horaInicio, Tiempo horaFin,
+            Fecha fechaActividad,
+            String descripcion, String responsable) {
+        this.numeroAula = numeroAula;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+        this.fechaHoraReserva = FechaTiempo.ahora();
+        this.fechaActividad = fechaActividad;
+        this.descripcion = descripcion;
         this.responsable = responsable;
     }
-    
-    public ReservaDTO(int idReserva, int idActividad, int numeroAula, boolean confirmada, Tiempo horaInicio, Tiempo horaFin, Fecha fechaReserva, Fecha fechaActividad, String descripcion) {
-        this.idReserva = idReserva;
-        this.idActividad = idActividad;
-        this.numeroAula = numeroAula;
-        this.confirmada = confirmada;
+
+    public ReservaDTO(String numeroAula, Tiempo horaInicio, Tiempo horaFin, FechaTiempo fechaHoraReserva, String descripcion, String responsable) {
+        this.numeroAula = Integer.parseInt(numeroAula);
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
+        this.fechaHoraReserva = fechaHoraReserva;
         this.descripcion = descripcion;
-        this.fechaReserva = fechaReserva;
-        this.fechaActividad = fechaActividad;
+        this.responsable = responsable;
     }
 
-    public ReservaDTO(int idActividad, int numeroAula, Fecha fechaReserva) {
-        this.idActividad = idActividad;
-        this.numeroAula = numeroAula;
-        this.fechaReserva = fechaReserva;
+    public ReservaDTO fromResultSet(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id");
+        int numeroAula = resultSet.getInt("numeroAula");
+
+        // Extraer hora de inicio y fin como Time
+        Tiempo horaInicio = Tiempo.fromSqlTime(resultSet.getTime("horaInicio"));
+        Tiempo horaFin = Tiempo.fromSqlTime(resultSet.getTime("horaFin"));
+
+        // Extraer fecha y hora de reserva como Timestamp
+        Timestamp fechaHoraReservaTs = resultSet.getTimestamp("fechaHoraReserva");
+        LocalDate fechaReservaLocalDate = fechaHoraReservaTs.toLocalDateTime().toLocalDate();
+        LocalTime horaReservaLocalTime = fechaHoraReservaTs.toLocalDateTime().toLocalTime();
+
+        // Crear objetos Fecha y Tiempo para la fechaHoraReserva
+        Fecha fechaHoraReservaFecha = new Fecha(fechaReservaLocalDate.getDayOfMonth(),
+                fechaReservaLocalDate.getMonthValue(),
+                fechaReservaLocalDate.getYear());
+        Tiempo tiempoReserva = new Tiempo(horaReservaLocalTime.getHour(),
+                horaReservaLocalTime.getMinute());
+
+        FechaTiempo fechaHoraReserva = new FechaTiempo(fechaHoraReservaFecha, tiempoReserva);
+
+        Fecha fechaActividad = Fecha.fromSqlDate(resultSet.getDate("fechaActividad"));
+        String descripcion = resultSet.getString("descripcion");
+        String responsable = resultSet.getString("responsable");
+
+        return new ReservaDTO(id, numeroAula, horaInicio, horaFin, fechaHoraReserva, fechaActividad, descripcion, responsable);
     }
 
-    public ReservaDTO(int idActividad, int numeroAula, Tiempo horaInicio, Tiempo horaFin, DayOfWeek diaSemana, String descripcion) {
-        this.idActividad = idActividad;
-        this.numeroAula = numeroAula;
-        this.horaInicio = horaInicio;
-        this.horaFin = horaFin;
-        this.diaActividadPeriodica = diaSemana;
-        this.descripcion = descripcion;
+    @Override
+    public String toString() {
+        return "ReservaDTO{" + "numeroAula=" + numeroAula + ", horaInicio=" + horaInicio.toString() + ", horaFin=" + horaFin.toString() + ", fechaHoraReserva=" + fechaHoraReserva + ", fechaActividad=" + fechaActividad + ", descripcion=" + descripcion + ", responsable=" + responsable + '}';
     }
     
-    public int getIdReserva() {
-        return idReserva;
+    
+    public int getId() {
+        return id;
     }
 
-    public void setIdReserva(int idReserva) {
-        this.idReserva = idReserva;
-    }
-
-    public int getIdActividad() {
-        return idActividad;
-    }
-
-    public void setIdActividad(int idActividad) {
-        this.idActividad = idActividad;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getNumeroAula() {
@@ -90,14 +106,6 @@ public class ReservaDTO {
 
     public void setNumeroAula(int numeroAula) {
         this.numeroAula = numeroAula;
-    }
-
-    public boolean isConfirmada() {
-        return confirmada;
-    }
-
-    public void setConfirmada(boolean confirmada) {
-        this.confirmada = confirmada;
     }
 
     public Tiempo getHoraInicio() {
@@ -116,12 +124,12 @@ public class ReservaDTO {
         this.horaFin = horaFin;
     }
 
-    public Fecha getFechaReserva() {
-        return fechaReserva;
+    public FechaTiempo getFechaHoraReserva() {
+        return fechaHoraReserva;
     }
 
-    public void setFechaReserva(Fecha fechaReserva) {
-        this.fechaReserva = fechaReserva;
+    public void setFechaHoraReserva(FechaTiempo fechaHoraReserva) {
+        this.fechaHoraReserva = fechaHoraReserva;
     }
 
     public Fecha getFechaActividad() {
@@ -132,14 +140,6 @@ public class ReservaDTO {
         this.fechaActividad = fechaActividad;
     }
 
-    public DayOfWeek getDiaActividadPeriodica() {
-        return diaActividadPeriodica;
-    }
-
-    public void setDiaActividadPeriodica(DayOfWeek diaActividadPeriodica) {
-        this.diaActividadPeriodica = diaActividadPeriodica;
-    }
-
     public String getDescripcion() {
         return descripcion;
     }
@@ -147,6 +147,12 @@ public class ReservaDTO {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    
-    
+
+    public String getResponsable() {
+        return responsable;
+    }
+
+    public void setResponsable(String responsable) {
+        this.responsable = responsable;
+    }
 }
