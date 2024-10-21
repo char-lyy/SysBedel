@@ -20,7 +20,7 @@ public class GestionarRecursos extends JFrame {
     public GestionarRecursos() {
         setTitle("Gestionar Recursos");
         setSize(400, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Crear panel principal con BorderLayout
@@ -146,14 +146,14 @@ public class GestionarRecursos extends JFrame {
         }
     }
 
-    /**
-     * Este método muestra la interfaz por pantalla.
-     * @param args
-     */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            GestionarRecursos frame = new GestionarRecursos();
-            frame.setVisible(true);
-        });
-    }
+//    /**
+//     * Este método muestra la interfaz por pantalla.
+//     * @param args
+//     */
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            GestionarRecursos frame = new GestionarRecursos();
+//            frame.setVisible(true);
+//        });
+//    }
 }

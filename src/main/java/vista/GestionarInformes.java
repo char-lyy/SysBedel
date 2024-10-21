@@ -24,7 +24,7 @@ public class GestionarInformes extends JFrame {
     public GestionarInformes() {
         setTitle("Gestionar Informes de Novedades");
         setSize(700, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Crear panel principal con BorderLayout
@@ -169,14 +169,15 @@ public class GestionarInformes extends JFrame {
         }
     }
 
-    /**
-     * Este metodo muestra la interfaz por pantalla.
-     * @param args 
-     */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            GestionarInformes frame = new GestionarInformes();
-            frame.setVisible(true);
-        });
-    }
+//    /**
+//     * Este metodo muestra la interfaz por pantalla.
+//     * @param args 
+//     */
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            GestionarInformes frame = new GestionarInformes();
+//            frame.setVisible(true);
+//            frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+//        });
+//    }
 }

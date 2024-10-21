@@ -24,7 +24,7 @@ public class PanelTablaHorariosPorDia {
 
     public PanelTablaHorariosPorDia() {
 
-        ControladorTablaHorarios controller = new ControladorTablaHorarios();
+        ControladorTablaHorariosPorDia controller = new ControladorTablaHorariosPorDia();
 
         String[] columnNames = controller.generarColumnas();
         tableModel = new DefaultTableModel(columnNames, 0);
@@ -55,9 +55,9 @@ public class PanelTablaHorariosPorDia {
     }
 }
 
-class ControladorTablaHorarios {
+class ControladorTablaHorariosPorDia {
 
-    public ControladorTablaHorarios() {
+    public ControladorTablaHorariosPorDia() {
     }
 
     public String[] generarColumnas() {
@@ -78,7 +78,7 @@ class ControladorTablaHorarios {
             return aux;
 
         } catch (SQLException ex) {
-            Logger.getLogger(ControladorTablaHorarios.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ControladorTablaHorariosPorDia.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }

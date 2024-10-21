@@ -41,10 +41,12 @@ public class FrameReservas extends JFrame {
         add(panelFormularioReservas);
         
         add(panelReservas);
+        
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
 
-    public static void main(String[] args) throws SQLException {
-        FrameReservas frame = new FrameReservas();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
+//    public static void main(String[] args) throws SQLException {
+//        FrameReservas frame = new FrameReservas();
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//    }
 }

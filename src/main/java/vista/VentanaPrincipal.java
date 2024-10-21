@@ -54,15 +54,15 @@ public class VentanaPrincipal extends JFrame {
         setJMenuBar(menuBar);
     }
     
-    /**
-     * Este metodo muestra la ventana principal por pantalla.
-     * @param args 
-     */
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new VentanaPrincipal().setVisible(true);
-        });
-    }
+//    /**
+//     * Este metodo muestra la ventana principal por pantalla.
+//     * @param args 
+//     */
+//
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            new VentanaPrincipal().setVisible(true);
+//        });
+//    }
 }
 

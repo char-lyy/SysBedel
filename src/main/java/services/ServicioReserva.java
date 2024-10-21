@@ -9,7 +9,6 @@ import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -81,7 +80,7 @@ public class ServicioReserva {
             // Inicializar la matriz con filas para cada intervalo y columnas para cada aula
             String[][] matrizReservas = new String[numIntervalos][numAulas];
 
-            // Inicializar todas las celdas como "Disponible"
+            // Inicializar todas las celdas como ""
             for (int i = 0; i < numIntervalos; i++) {
                 for (int j = 0; j < numAulas; j++) {
                     matrizReservas[i][j] = "";
@@ -335,6 +334,93 @@ public class ServicioReserva {
 
     public static long calcularSemanasEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
         return ChronoUnit.WEEKS.between(fechaInicio, fechaFin);
+    }
+
+    public String[][] obtenerReservasPorAula(String aula, Fecha fecha) {
+
+        int numeroAula = Integer.parseInt(aula);
+        Fecha[] fechas = obtenerFechasDeLaSemana(fecha.toLocalDate());
+
+        // Obtener la cantidad de días y la cantidad de intervalos (30 minutos)
+        int numDias = 7;
+        LocalTime HORA_INICIO = LocalTime.of(6, 0);
+        LocalTime HORA_FIN = LocalTime.of(22, 0);
+        int INTERVALO_MINUTOS = 30;
+        int numIntervalos = (int) ((HORA_FIN.toSecondOfDay() - HORA_INICIO.toSecondOfDay()) / (INTERVALO_MINUTOS * 60)) + 1;
+
+        // Inicializar la matriz de reservas
+        String[][] matrizReservas = new String[numIntervalos][numDias];
+
+        // Inicializar todas las celdas como ""
+        for (int i = 0; i < numIntervalos; i++) {
+            for (int j = 0; j < numDias; j++) {
+                matrizReservas[i][j] = "";
+            }
+        }
+
+        try {
+            // SQL para obtener reservas por aula y por semana
+            String query = """
+            SELECT fechaActividad, horaInicio, horaFin, descripcion 
+            FROM Reserva 
+            WHERE numeroAula = ? AND fechaActividad BETWEEN ? AND ?;
+        """;
+
+            // Conexión y ejecución de la consulta
+            Connection conn = ConnectionManager.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query);
+
+            // Asignar valores a los parámetros (número de aula, fecha inicio y fecha fin de la semana)
+            ps.setInt(1, numeroAula);
+            ps.setDate(2, fechas[0].toSqlDate());  // Primer día de la semana (lunes)
+            ps.setDate(3, fechas[6].toSqlDate());  // Último día de la semana (domingo)
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Date fechaActividad = rs.getDate("fechaActividad");
+                Time horaInicio = rs.getTime("horaInicio");
+                Time horaFin = rs.getTime("horaFin");
+                String descripcion = rs.getString("descripcion");
+
+                LocalDate fechaReserva = fechaActividad.toLocalDate();
+                LocalTime inicioReserva = horaInicio.toLocalTime();
+                LocalTime finReserva = horaFin.toLocalTime();
+
+                // Encontrar el índice de la columna que representa el día de la semana
+                int col = fechaReserva.getDayOfWeek().getValue() - 1; // Lunes = 0, Domingo = 6
+
+                // Llenar las celdas correspondientes en la matriz
+                LocalTime horaActual = HORA_INICIO;
+                for (int fila = 0; fila < numIntervalos; fila++) {
+                    if (!horaActual.isBefore(inicioReserva) && horaActual.isBefore(finReserva)) {
+                        matrizReservas[fila][col] = (descripcion == null || descripcion.trim().isEmpty()) ? "Reservado" : descripcion;
+                    }
+                    horaActual = horaActual.plusMinutes(INTERVALO_MINUTOS);
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ServicioReserva.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return matrizReservas;
+    }
+
+    public static Fecha[] obtenerFechasDeLaSemana(LocalDate fechaSeleccionada) {
+        // Crear un array de 7 elementos para las fechas de la semana
+        Fecha[] fechas = new Fecha[7];
+
+        // Obtener el primer día de la semana (suponiendo que la semana comienza el lunes)
+        LocalDate inicioDeLaSemana = fechaSeleccionada.with(DayOfWeek.MONDAY);
+
+        // Llenar el array con las fechas de la semana (7 días)
+        for (int i = 0; i < 7; i++) {
+            LocalDate localDateAux = inicioDeLaSemana.plusDays(i);
+            fechas[i] = Fecha.fromLocalDate(localDateAux);  // Asignar cada fecha al array
+        }
+
+        return fechas;
     }
 
 }

@@ -29,7 +29,7 @@ public class GestionarAulas extends JFrame {
         aulaDAO = new AulaDAO(); // Inicializar el AulaDAO
         setTitle("Gestionar Aulas");
         setSize(600, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
@@ -270,10 +270,10 @@ private void modificarAula() {
         textHora.setText("");
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            GestionarAulas ventana = new GestionarAulas();
-            ventana.setVisible(true);
-        });
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            GestionarAulas ventana = new GestionarAulas();
+//            ventana.setVisible(true);
+//        });
+//    }
 }

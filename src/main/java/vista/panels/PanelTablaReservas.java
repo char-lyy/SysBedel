@@ -5,10 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -192,7 +189,33 @@ public class PanelTablaReservas extends JPanel {
         }
 
         private void cargarCeldasPorAula(JTable nuevaTabla, String aula, Fecha fecha) {
+            // Verifica que el aula y la fecha no sean nulos
+            if (aula == null || fecha == null) {
+                System.out.println("Aula o fecha no válidas.");
+                return;
+            }
 
+            // Obtener el modelo de la tabla
+            TableModel tableModel = nuevaTabla.getModel();
+
+            // Crear una instancia de ServicioReserva y obtener la matriz de reservas
+            ServicioReserva servicioReserva = new ServicioReserva();
+            String[][] matrizReservas = servicioReserva.obtenerReservasPorAula(aula, fecha);
+
+            // Validar que la matriz no sea nula antes de intentar cargarla en la tabla
+            if (matrizReservas == null) {
+                System.out.println("Error al obtener las reservas para el aula y la fecha proporcionadas.");
+                return;
+            }
+
+            // Llenar cada celda de la tabla, a partir de la segunda columna (columna de índice 1)
+            for (int fila = 0; fila < matrizReservas.length; fila++) {
+                for (int col = 0; col < matrizReservas[fila].length - 1; col++) {
+                    // Usar setValueAt para llenar la celda correspondiente en la tabla
+                    tableModel.setValueAt(matrizReservas[fila][col], fila, col + 1); // Desplazamiento a partir de la columna 1
+                }
+            }
         }
+
     }
 }
