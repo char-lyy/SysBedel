@@ -1,7 +1,6 @@
 package principal;
 
-import javax.swing.SwingUtilities;
-import vista.VentanaPrincipal;
+import vista.frames.FrameLogin;
 
 public class Main {
 
@@ -11,8 +10,13 @@ public class Main {
      */
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new VentanaPrincipal().setVisible(true);
-        });
+        
+        FrameLogin frame = new FrameLogin();
+        
+//        SwingUtilities.invokeLater(() -> {
+//            new VentanaPrincipal().setVisible(true);
+//        });
+        
+        
     }
 }

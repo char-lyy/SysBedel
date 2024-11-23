@@ -36,8 +36,8 @@ public class AulaDAO {
             statement.setBoolean(2, aula.isOcupada());
             statement.setString(3, aula.getObservaciones());
             statement.setString(4, aula.getResponsable()); // Nuevo atributo
-            statement.setString(5, aula.getFecha()); // Nuevo atributo
-            statement.setString(6, aula.getHora()); // Nuevo atributo
+            statement.setDate(5, java.sql.Date.valueOf(aula.getFecha())); // Nuevo atributo
+            statement.setTime(6, Time.valueOf(aula.getHora())); // Nuevo atributo
             statement.setInt(7, aula.getNroAula());
             statement.executeUpdate();
         }
