@@ -15,21 +15,18 @@ public class CuentaDAO {
     // Método para buscar una cuenta por email
     public CuentaDTO buscarPorEmail(String email) throws Exception {
         String query = "SELECT * FROM cuentas WHERE email = ?";
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = ConnectionManager.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                
-                
+
                 return new CuentaDTO(
-                        
-                    resultSet.getInt("id"),
-                    resultSet.getString("password_hash"),
-                    FechaTiempo.fromLocalDateTime(resultSet.getTimestamp("created_at").toLocalDateTime()));
-               
+                        resultSet.getInt("id"),
+                        resultSet.getString("password_hash"),
+                        FechaTiempo.fromLocalDateTime(resultSet.getTimestamp("created_at").toLocalDateTime()));
+
             }
         }
         return null; // Si no se encuentra la cuenta
@@ -38,24 +35,25 @@ public class CuentaDAO {
     // Método para registrar una nueva cuenta
     public boolean registrarCuenta(CuentaDTO cuenta) throws Exception {
         String query = "INSERT INTO cuentas (email, password_hash, created_at) VALUES (?, ?, NOW())";
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = ConnectionManager.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setString(1, cuenta.getEmail());
             statement.setString(2, cuenta.getPasswordHash());
             return statement.executeUpdate() > 0;
         }
     }
-    
-        // Método para registrar una nueva cuenta
-    public boolean modificarCuenta(CuentaDTO cuenta) throws Exception {
-        String query = "INSERT INTO cuentas (email, password_hash, created_at) VALUES (?, ?, NOW())";
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
 
-            statement.setString(1, cuenta.getEmail());
-            statement.setString(2, cuenta.getPasswordHash());
-            return statement.executeUpdate() > 0;
+    public boolean modificarCuenta(String email, String nuevaPassword) throws Exception {
+        String query = "UPDATE cuentas SET password_hash = ? WHERE email = ?";
+        try (Connection connection = ConnectionManager.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
+
+            // Establece los parámetros
+            statement.setString(1, nuevaPassword);
+            statement.setString(2, email);
+
+            // Ejecuta la actualización
+            return statement.executeUpdate() > 0; // Devuelve true si al menos una fila fue afectada
         }
     }
+
 }

@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import services.ServicioRecuperacion;
+import vista.frames.FrameCambiarContraseña;
 
 public class PanelRecuperarContraseña extends JPanel {
 
@@ -23,6 +24,21 @@ public class PanelRecuperarContraseña extends JPanel {
         enviarButton = new JButton("Enviar Código");
         mensajeLabel = new JLabel("");
 
+        // Organizar los componentes en el panel
+        this.add(new JLabel("Ingrese su correo electrónico:"));
+        this.add(emailField);
+        this.add(enviarButton);
+        this.add(mensajeLabel);
+
+        configurarBotones();
+    }
+
+    void configurarBotones() {
+        configurarBotonEnvio();
+    }
+
+    void configurarBotonEnvio() {
+
         // Agregar ActionListener para el botón
         enviarButton.addActionListener(new ActionListener() {
             @Override
@@ -36,8 +52,11 @@ public class PanelRecuperarContraseña extends JPanel {
                     if (exito) {
 
                         JOptionPane.showMessageDialog(null, "Te hemos enviado un código de recuperación al correo.");
-
+                        
                         frame.dispose();
+                        
+                        FrameCambiarContraseña frameCambiarContraseña = new FrameCambiarContraseña(servicioRecuperacion);
+                        
                     } else {
                         JOptionPane.showMessageDialog(PanelRecuperarContraseña.this,
                                 "Mail no encontrado. Revise la casilla o contacte con servicio tecnico.",
@@ -48,12 +67,5 @@ public class PanelRecuperarContraseña extends JPanel {
 
             }
         });
-
-        // Organizar los componentes en el panel
-        this.add(new JLabel("Ingrese su correo electrónico:"));
-        this.add(emailField);
-        this.add(enviarButton);
-        this.add(mensajeLabel);
     }
-
 }
