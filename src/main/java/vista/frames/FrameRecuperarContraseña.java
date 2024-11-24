@@ -5,19 +5,19 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
 import vista.panels.PanelLogin;
-
+import vista.panels.PanelRecuperarContraseña;
 
 /**
  *
  * @author carlos
  */
-public class FrameLogin extends JFrame {
+public class FrameRecuperarContraseña extends JFrame{
 
-    public FrameLogin() {
+    public FrameRecuperarContraseña() {
 
-        PanelLogin panelLogin = new PanelLogin(this);
+        PanelRecuperarContraseña panelRecuperarContraseña = new PanelRecuperarContraseña(this);
 
-        setTitle("Login Sysbedel");
+        setTitle("Recuperar Contraseña");
 
         Toolkit display001 = Toolkit.getDefaultToolkit();
 
@@ -28,11 +28,11 @@ public class FrameLogin extends JFrame {
                 (int) (displaySize.width / 3),
                 (int) (displaySize.height / 4));
 
-        setLayout(new GridLayout(1, 2));
+        setLayout(new GridLayout(1, 1));
 
         setVisible(true);
 
-        add(panelLogin);
+        add(panelRecuperarContraseña);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }

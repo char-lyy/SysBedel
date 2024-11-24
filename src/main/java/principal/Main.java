@@ -13,10 +13,5 @@ public class Main {
         
         FrameLogin frame = new FrameLogin();
         
-//        SwingUtilities.invokeLater(() -> {
-//            new VentanaPrincipal().setVisible(true);
-//        });
-        
-        
     }
 }

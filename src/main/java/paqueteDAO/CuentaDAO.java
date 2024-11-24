@@ -46,4 +46,16 @@ public class CuentaDAO {
             return statement.executeUpdate() > 0;
         }
     }
+    
+        // Método para registrar una nueva cuenta
+    public boolean modificarCuenta(CuentaDTO cuenta) throws Exception {
+        String query = "INSERT INTO cuentas (email, password_hash, created_at) VALUES (?, ?, NOW())";
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setString(1, cuenta.getEmail());
+            statement.setString(2, cuenta.getPasswordHash());
+            return statement.executeUpdate() > 0;
+        }
+    }
 }

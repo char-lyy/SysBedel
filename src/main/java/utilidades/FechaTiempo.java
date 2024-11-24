@@ -72,6 +72,37 @@ public class FechaTiempo implements Comparable<FechaTiempo> {
     }
 
     /**
+     * Convierte la instancia de FechaTiempo a un objeto
+     * java.time.LocalDateTime.
+     *
+     * @return Un objeto LocalDateTime que representa la fecha y hora.
+     */
+    public LocalDateTime toLocalDateTime() {
+        return LocalDateTime.of(
+                this.fecha.getAño(),
+                this.fecha.getMes(),
+                this.fecha.getDia(),
+                this.tiempo.getHoras(),
+                this.tiempo.getMinutos(),
+                0
+        );
+    }
+
+    /**
+     * Crea una instancia de FechaTiempo a partir de un objeto
+     * java.time.LocalDateTime.
+     *
+     * @param localDateTime Un objeto LocalDateTime.
+     * @return Una instancia de FechaTiempo que representa la misma fecha y
+     * hora.
+     */
+    public static FechaTiempo fromLocalDateTime(LocalDateTime localDateTime) {
+        Fecha fecha = new Fecha(localDateTime.getDayOfMonth(), localDateTime.getMonthValue(), localDateTime.getYear());
+        Tiempo tiempo = new Tiempo(localDateTime.getHour(), localDateTime.getMinute());
+        return new FechaTiempo(fecha, tiempo);
+    }
+
+    /**
      * Devuelve una instancia de FechaTiempo con la fecha y hora actuales del
      * sistema.
      *
