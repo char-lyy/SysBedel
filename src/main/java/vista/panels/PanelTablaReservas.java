@@ -6,11 +6,14 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
+import paqueteDAO.AulaDAO;
+import paqueteDTO.AulaDTO;
 import services.ServicioReserva;
 import utilidades.Fecha;
 import utilidades.FechaTiempo;
@@ -47,10 +50,28 @@ public class PanelTablaReservas extends JPanel {
             String[] opciones = {"Por aula", "Por día"};
             selectorConsulta = new JComboBox<>(opciones);
 
-            PanelFormularioReservas panelFormularioReservas = new PanelFormularioReservas();
-            comboBoxAulas = panelFormularioReservas.inicializarComboBoxAulas();
+//            PanelFormularioReservas panelFormularioReservas = new PanelFormularioReservas();
+            comboBoxAulas = new JComboBox<>();
+            comboBoxAulas = inicializarComboBoxAulas();
 
             dateChooserConsulta = new JDateChooser(FechaTiempo.ahora().toSqlDateTime());
+        }
+
+        /**
+         * Coloca los numeros de aula en el JComboBox de aulas
+         *
+         * @return
+         * @throws SQLException
+         */
+        public JComboBox<String> inicializarComboBoxAulas() throws SQLException {
+
+            AulaDAO aulaDAO = new AulaDAO();
+            List<AulaDTO> listaAulas = aulaDAO.obtenerAulas();
+            for (AulaDTO next : listaAulas) {
+                comboBoxAulas.addItem(next.getNroAula() + "");
+            }
+
+            return comboBoxAulas;
         }
 
         private void configurarPanel() {
@@ -218,4 +239,5 @@ public class PanelTablaReservas extends JPanel {
         }
 
     }
+
 }

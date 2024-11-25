@@ -33,11 +33,11 @@ public class ServicioReserva {
     private static final int DIA_FIN_PRIMER_CUATRIMESTRE = 6;
     private static final int MES_FIN_PRIMER_CUATRIMESTRE = 7;
 
-    private static final int DIA_INICIO_SEGUNDO_CUATRIMESTRE = 12;
+    private static final int DIA_INICIO_SEGUNDO_CUATRIMESTRE = 4;
     private static final int MES_INICIO_SEGUNDO_CUATRIMESTRE = 8;
 
-    private static final int DIA_FIN_SEGUNDO_CUATRIMESTRE = 23;
-    private static final int MES_FIN_SEGUNDO_CUATRIMESTRE = 11;
+    private static final int DIA_FIN_SEGUNDO_CUATRIMESTRE = 1;
+    private static final int MES_FIN_SEGUNDO_CUATRIMESTRE = 12;
 
     public ServicioReserva() {
     }

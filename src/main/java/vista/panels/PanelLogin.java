@@ -120,12 +120,12 @@ public class PanelLogin extends JPanel {
                                 "Inicio de sesión exitoso. ¡Bienvenido, " + email + "!",
                                 "Éxito",
                                 JOptionPane.INFORMATION_MESSAGE);
-
-                        SwingUtilities.invokeLater(() -> {
-                            new VentanaPrincipal().setVisible(true);
-                        });
-
+                        
                         frame.dispose();
+                        
+                        VentanaPrincipal ventanaPrincipal = new VentanaPrincipal();
+                        
+                        ventanaPrincipal.setVisible(true);
                     } else {
                         JOptionPane.showMessageDialog(PanelLogin.this,
                                 "Credenciales incorrectas. Por favor, inténtelo nuevamente.",
